@@ -1,12 +1,14 @@
+require('dotenv').config();
 const express=require('express');
-const dotenv=require('dotenv')
+const connectDB = require('./config/db');
 const cors=require('cors')
 const mongoose =require('mongoose')
 
-dotenv.config();
-const PORT = process.env.PORT || 5000;
+// Connect to the database
+connectDB();
 
-const app=express();
+const app = express();
+const PORT = 5000; // Your chosen port
 
 app.use(cors())
 app.use(express.json())
@@ -20,7 +22,7 @@ app.use('/api/auth', authRoutes);
 
 app.use((err,req,res,next)=>{
   console.error(err.stack);
-  res.status(500).json({message: err.message +"error hei bhai"})
+  res.status(500).json({message: err.message +"error hei bhai..Server.js se bol rha hun"})
 })
 
 app.listen(PORT, ()=>{
