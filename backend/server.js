@@ -13,12 +13,9 @@ const PORT = 5000; // Your chosen port
 app.use(cors())
 app.use(express.json())
 
-const userRoutes=require('.routes/userRoutes')
-const authRoutes=require('.routes/authRoutes')
-
-//end point create kiye
-app.use('/api/users', userRoutes);
+const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
+
 
 app.use((err,req,res,next)=>{
   console.error(err.stack);

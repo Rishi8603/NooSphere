@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken')
-const JwtSecret = process.env.JWT_SECRET;module.exports=fetchUser;
+const JwtSecret = process.env.JWT_SECRET;
 
 const authMiddleware = (req, res, next) => {
   //get the token from request header
-  const token = req.header('auth-token')
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+
   if (!token) {
     return res.status(401).send({ error: "access denied,no token provided" })
   }

@@ -1,5 +1,3 @@
-const express = require('express');
-const router = express.Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
 
@@ -14,12 +12,12 @@ const signup=async (req,res)=>{
     const salt = await bcrypt.genSalt(10);
     const hashedPass = await bcrypt.hash(req.body.password, salt)
 
-    user = await User.create({
+    user = await User.create({//user.create se automatic db mein save ho jata hei
       name: req.body.name,
       email: req.body.email,
       password: hashedPass
     })
-    await user.save();
+
     res.json({ success: true, message: "user registered" })
   }
   catch (error) {
@@ -31,7 +29,8 @@ const signup=async (req,res)=>{
 //importing middleware
 const authMiddleware=require('../middleware/authMiddleware')
 const jwt = require('jsonwebtoken')
-const JwtSecret = process.env.JwtSecret;
+const JwtSecret = process.env.JWT_SECRET;
+
 
 const login=async(req,res)=>{
   try{
@@ -64,3 +63,5 @@ const login=async(req,res)=>{
     res.status(500).send("Internal Server Error")
   }
 }
+
+module.exports = { signup, login };

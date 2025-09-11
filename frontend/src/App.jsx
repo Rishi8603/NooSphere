@@ -1,11 +1,19 @@
-import React from 'react'
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Signup from "./pages/Signup";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 
-function App() {
+
+export default function App() {
   return (
-    <div className='text-6xl font-bold bg-red-500'>
-      <h1>i am r</h1>
-    </div>
-  )
+    <Router>
+      <Routes>
+        <Route path="/Signup"></Route>
+        <Route path="/Login"></Route>
+        <Route path="/Dashboard"></Route>
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
