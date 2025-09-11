@@ -30,7 +30,7 @@ const Login = () => {
       setUser(decodedUser.user);
 
       // Redirect to dashboard
-      navigate("/dashboard");
+      navigate("/");
     } catch (err) {
       console.error("Login error:", err);
       setError(err.message || "Login failed");

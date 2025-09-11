@@ -2,7 +2,8 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Authpage from "./pages/Authpage";
 import Dashboard from "./pages/Dashboard";
-import ProtectedRoute from "./Components/ProtectedRoute";
+import Homepage from "./pages/Homepage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   return (
@@ -11,10 +12,10 @@ const App = () => {
 
         <Route path="/auth" element={<Authpage />} />
         
-        <Route path="/dashboard"
+        <Route path="/"
           element={
             <ProtectedRoute>
-              <Dashboard/>
+              <Homepage/>
             </ProtectedRoute>
           }
         />

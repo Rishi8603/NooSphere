@@ -8,7 +8,17 @@ export const signup = async (userData) => {
     const response = await axios.post(`${API_URL}/signup`, userData);
     return response.data;  // { token, user }
   } catch (error) {
-    throw error.response.data;  // pass error back to component
+    // Check if the error has a response from the server
+    if (error.response) {
+      // The server responded with a status code that falls out of the range of 2xx
+      throw error.response.data;
+    } else if (error.request) {
+      // The request was made but no response was received (e.g., server is down)
+      throw new Error("Cannot connect to the server. Please check your connection.");
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      throw new Error(error.message);
+    }
   }
 };
 
@@ -20,6 +30,17 @@ export const login = async (credentials) => {
     }
     return response.data;  // { token, user }
   } catch (error) {
-    throw error.response.data;
+    // Check if the error has a response from the server
+    if (error.response) {
+      // The server responded with a status code that falls out of the range of 2xx
+      throw error.response.data;
+    } else if (error.request) {
+      // The request was made but no response was received (e.g., server is down)
+      throw new Error("Cannot connect to the server. Please check your connection.");
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      throw new Error(error.message);
+    }
   }
 };
+

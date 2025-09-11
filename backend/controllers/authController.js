@@ -36,7 +36,7 @@ const login=async(req,res)=>{
   try{
     let user = await User.findOne({ email: req.body.email });
     if (!user) {
-      return res.status(400).json({ error: "please try again ladle" })
+      return res.status(400).json({ error: "please try again ladle..user nhi mila hei db mein" })
     }
 
     const passwordComp = await bcrypt.compare(req.body.password, user.password);

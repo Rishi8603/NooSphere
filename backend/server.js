@@ -8,13 +8,13 @@ const mongoose =require('mongoose')
 connectDB();
 
 const app = express();
-const PORT = process.env.PORT || 5000;// Your chosen port
+const PORT = process.env.PORT || 5000;
 
 app.use(cors())
 app.use(express.json())
 
-const authRoutes = require('./routes/auth');
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/posts',require('./routes/posts'));
 
 
 app.use((err,req,res,next)=>{
