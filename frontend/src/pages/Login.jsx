@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/authService";
+import { AuthContext } from "../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 const Login = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { setUser } = useContext(AuthContext); 
 
   // input change handler
   const handleChange = (e) => {
@@ -20,7 +23,11 @@ const Login = () => {
       console.log("Login success:", data);
 
       // Save token in localStorage
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("token", data.authToken);
+
+      //updating global state manually
+      const decodedUser = jwtDecode(data.authToken);
+      setUser(decodedUser.user);
 
       // Redirect to dashboard
       navigate("/dashboard");

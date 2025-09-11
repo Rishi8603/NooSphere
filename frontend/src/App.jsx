@@ -1,19 +1,27 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Signup from "./pages/Signup";
-import Login from "./pages/Login";
+import Authpage from "./pages/Authpage";
 import Dashboard from "./pages/Dashboard";
+import ProtectedRoute from "./Components/ProtectedRoute";
 
-
-export default function App() {
+const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/Signup"></Route>
-        <Route path="/Login"></Route>
-        <Route path="/Dashboard"></Route>
+
+        <Route path="/auth" element={<Authpage />} />
+        
+        <Route path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard/>
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/auth" />} />
       </Routes>
     </Router>
   );
-}
+};
 
+export default App;

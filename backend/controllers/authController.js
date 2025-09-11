@@ -48,7 +48,9 @@ const login=async(req,res)=>{
       //yhaan hum sirf user ki uniqueId rakhenge...isse jab bhi user ye token
       //wapas bhejega, hum is ID se pata laga sakte hein ki kaunsa user hei
       user: {
-        id: user.id
+        id: user.id,
+        name:user.name,
+        email:user.email
       }
     }
     //debugging
@@ -56,7 +58,7 @@ const login=async(req,res)=>{
 
     //jwt.sign() function payload ar secret key milakar ek unique token string
     //generate krega
-    const authToken = jwt.sign(payload, JwtSecret);
+    const authToken = jwt.sign(payload, process.env.JWT_SECRET);
     res.json({ success: true, authToken });
   }catch(error){
     console.error(error.message);

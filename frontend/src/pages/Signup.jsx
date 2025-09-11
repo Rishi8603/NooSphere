@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {useNavigate} from 'react-router-dom'
-import { Signup } from "../services/authService";
+import { signup } from "../services/authService";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -23,8 +23,8 @@ const Signup = () => {
     try{
       const data=await signup(formData);//call backend
       console.log("SignUp success:" ,data)
-      navigate('./login')
-    }catch(error){
+      navigate('/auth')
+    }catch(err){
       console.log("Signup error:",err);
       setError(err.message || "signup failed")
     }
@@ -38,9 +38,9 @@ const Signup = () => {
         {error && <p className="text-red-500">{error}</p>}
 
         <input
-          name="username"
+          name="name"
           placeholder="Username"
-          value={formData.username}
+          value={formData.name}
           onChange={handleChange}
           className="mb-2 p-2 border w-full"
         />

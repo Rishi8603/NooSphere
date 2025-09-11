@@ -8,7 +8,7 @@ const mongoose =require('mongoose')
 connectDB();
 
 const app = express();
-const PORT = 5000; // Your chosen port
+const PORT = process.env.PORT || 5000;// Your chosen port
 
 app.use(cors())
 app.use(express.json())
