@@ -3,26 +3,32 @@ const User = require('../models/User');
 
 const signup=async (req,res)=>{
   try {
-    let user = await User.findOne({ email: req.body.email });
+    const {name,email,password}=req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: "Please fill all fields" });
+    }
+    const lowerCaseEmail=email.toLowerCase();
+
+    let user = await User.findOne({ email: lowerCaseEmail });
     if (user) {
       return res.status(400).json({ error: "Sorry nhi bn payega bcz account already existed" })
     }
 
     //password hashing
     const salt = await bcrypt.genSalt(10);
-    const hashedPass = await bcrypt.hash(req.body.password, salt)
+    const hashedPass = await bcrypt.hash(password, salt)
 
     user = await User.create({//user.create se automatic db mein save ho jata hei
-      name: req.body.name,
-      email: req.body.email,
-      password: hashedPass
+      name: name,
+      email: lowerCaseEmail,
+      password: hashedPass,
     })
 
     res.json({ success: true, message: "user registered" })
   }
   catch (error) {
     console.error(error.message)
-    res.status(500).send("Internal Server Error")
+    res.status(500).send("Internal Server Error signup(authController)")
   }
 }
 
@@ -34,12 +40,18 @@ const JwtSecret = process.env.JWT_SECRET;
 
 const login=async(req,res)=>{
   try{
-    let user = await User.findOne({ email: req.body.email });
+    const {email, password}=req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: "Please provide email and password" });
+    }
+    const lowerCaseEmail=email.toLowerCase();
+
+    let user = await User.findOne({ email: lowerCaseEmail });
     if (!user) {
       return res.status(400).json({ error: "please try again ladle..user nhi mila hei db mein" })
     }
 
-    const passwordComp = await bcrypt.compare(req.body.password, user.password);
+    const passwordComp = await bcrypt.compare(password, user.password);
     if (!passwordComp) return res.status(400).json({ error: "glt password hei" })
 
     //if password match ho jata hei than jwt generate kro 
@@ -54,11 +66,12 @@ const login=async(req,res)=>{
       }
     }
     //debugging
-    console.log("JWT Secret being used:", process.env.JwtSecret);
+    console.log("JWT Secret being used:", process.env.JWT_SECRET);
 
     //jwt.sign() function payload ar secret key milakar ek unique token string
     //generate krega
-    const authToken = jwt.sign(payload, process.env.JWT_SECRET);
+    const authToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
+
     res.json({ success: true, authToken });
   }catch(error){
     console.error(error.message);

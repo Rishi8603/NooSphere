@@ -8,7 +8,7 @@ const Sidebar=()=>{
     logout();
   };
   return (
-    <div className="flex flex-col justify-center items-center h-screen">
+    <div className="flex flex-col justify-center items-center h-screen ">
       <h1 className="text-3xl mb-4">Dashboard</h1>
       {user ? (
         <>
