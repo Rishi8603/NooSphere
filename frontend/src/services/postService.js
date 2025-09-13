@@ -12,3 +12,24 @@ export const getPosts = async () => {
     throw error;
   }
 };
+
+export const createPost=async(postData)=>{
+  try{
+    // Get the token from local storage
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error("No auth token found. Please log in.");
+    }
+
+    const config={
+      headers:{
+        'Authorization':`Bearer ${token}`,
+      },
+    };
+
+    const response=await axios.post(API_URL,postData,config)
+  }catch(error){
+    console.error("error creating post", error);
+    throw error;
+  }
+}

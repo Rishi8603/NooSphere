@@ -3,10 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../services/authService";
 import { AuthContext } from "../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
+import invisibleIcon from '../assets/invisible.png';
+import visibleIcon from '../assets/visible.png';
 
 const Login = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false); 
   const navigate = useNavigate();
   const { setUser } = useContext(AuthContext); 
 
@@ -52,15 +55,32 @@ const Login = () => {
           onChange={handleChange}
           className="mb-2 p-2 border w-full"
         />
-
-        <input
-          name="password"
-          type="password"
-          placeholder="Password"
-          value={credentials.password}
-          onChange={handleChange}
-          className="mb-2 p-2 border w-full"
-        />
+        <div className="relative mb-2">
+          <input
+            name="password"
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            value={credentials.password}
+            onChange={handleChange}
+            className="mb-2 p-2 border w-full"
+          />
+          <button type="button" onClick={() =>setShowPassword((prev)=>!prev)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">
+            {showPassword ? (
+              <img
+                src={visibleIcon}
+                alt="Show Password"
+                className="w-6 h-6 mb-2" 
+              />
+            ) : (
+              <img
+                  src={invisibleIcon}
+                alt="Hide Password"
+                className="w-6 h-6 mb-2"
+              />
+            )}
+          </button>
+        </div>
 
         <button type="submit" className="bg-green-500 text-white p-2 w-full">Login</button>
       </form>
