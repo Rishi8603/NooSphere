@@ -56,4 +56,37 @@ const deletePost= async(req,res)=>{
   }
 }
 
-module.exports = { createPost, getPosts, deletePost };
+const updatePost = async (req, res) => {
+  try {
+    const { headline, text, fileUrl, tags } = req.body;
+
+    const newPostData = {};
+    if (headline) { newPostData.headline = headline; }
+    if (text) { newPostData.text = text; }
+    if (fileUrl) { newPostData.fileUrl = fileUrl; }
+    if (tags) { newPostData.tags = tags; }
+
+    let post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.status(404).send("Not Found");
+    }
+
+    if (post.user.toString() !== req.user.id) {
+      return res.status(401).send("Not Allowed");
+    }
+
+    post = await Post.findByIdAndUpdate(
+      req.params.id,
+      { $set: newPostData },
+      { new: true } // {new: true} tells Mongoose to return the document after the update
+    ).populate('user','name');
+
+    res.json({ post });
+
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+module.exports = { createPost, getPosts, deletePost, updatePost };

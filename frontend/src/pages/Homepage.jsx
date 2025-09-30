@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import Feed from './Feed';
 import CreatePost from '../components/CreatePost';
-import { getPosts, deletePost } from '../services/postService'; 
+import { getPosts, deletePost, createPost, updatePost } from '../services/postService'; 
 
 const Homepage = () => {
   const [posts, setPosts] = useState([]);
@@ -33,6 +33,16 @@ const Homepage = () => {
     }
   };
 
+  const handleUpdatePost = async (postId, updatedData) => {
+    try {
+      const { post } = await updatePost(postId, updatedData);
+      // Find the post in the current state and replace it with the updated version
+      setPosts(posts.map(p => (p._id === postId ? post : p)));
+    } catch (error) {
+      console.error("Failed to update post:", error);
+    }
+  };
+
   return (
     <div className="flex h-screen bg-gray-100">
       <div className="w-1/4 border-r bg-white flex-shrink-0">
@@ -45,7 +55,7 @@ const Homepage = () => {
         </div>
 
         <div className="flex-grow overflow-y-auto p-4">
-          <Feed posts={posts} loading={loading} onDelete={handleDeletePost} />
+          <Feed posts={posts} loading={loading} onDelete={handleDeletePost} onUpdate={handleUpdatePost} />
         </div>
       </div>
     </div>

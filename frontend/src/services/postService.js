@@ -55,3 +55,24 @@ export const deletePost = async (postId) => {
     throw error;
   }
 };
+export const updatePost = async (postId, updatedData) => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error("No auth token found. Please log in.");
+    }
+
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    };
+
+    // Send a PUT request with the updated data
+    const response = await axios.put(`${API_URL}/${postId}`, updatedData, config);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating post:", error);
+    throw error;
+  }
+};
