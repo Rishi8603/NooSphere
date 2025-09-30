@@ -24,11 +24,11 @@ const createPost=async(req,res)=>{
   }
 }
 
-// --- Controller to GET all posts ---
 const getPosts = async (req, res) => {
   try {
-    // Find all posts and sort them by date (newest first)
-    const posts = await Post.find().sort({ date: -1 });
+    //.populate() in Mongoose is a method that replaces a referenced ObjectId in a document
+    // with the actual document from another collection.
+    const posts = await Post.find().populate('user', 'name').sort({ date: -1 });    
     res.json(posts);
   } catch (error) {
     console.error(error.message);
@@ -36,5 +36,24 @@ const getPosts = async (req, res) => {
   }
 }
 
+const deletePost= async(req,res)=>{
+  try{
+    let post=await Post.findById(req.params.id);
+    if(!post){
+      return res.status(404).send("Not Found")
+    }
 
-module.exports = { createPost, getPosts };
+    //check if user trying to delete the post is the one who created it
+    if(post.user.toString() !==req.user.id){
+      return res.status(401).send("Not Allowed, you hadn't created this post")
+    }
+
+    await Post.findByIdAndDelete(req.params.id);
+    res.json({"Success:":"Post has been deleted", post:post})
+  }catch(error){
+    console.error(error.message)
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+module.exports = { createPost, getPosts, deletePost };

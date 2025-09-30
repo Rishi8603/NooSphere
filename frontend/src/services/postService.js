@@ -32,4 +32,26 @@ export const createPost=async(postData)=>{
     console.error("error creating post", error);
     throw error;
   }
-}
+};
+
+export const deletePost = async (postId) => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error("No auth token found. Please log in.");
+    }
+
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    };
+
+    // Send a DELETE request to the specific post's URL
+    const response = await axios.delete(`${API_URL}/${postId}`, config);
+    return response.data;
+  } catch (error){
+    console.error("Error deleting post:", error);
+    throw error;
+  }
+};
