@@ -3,9 +3,11 @@ const express=require('express');
 const connectDB = require('./config/db');
 const cors=require('cors')
 const mongoose =require('mongoose')
+const connectCloudinary=require('./config/cloudinary');
 
 // Connect to the database
 connectDB();
+connectCloudinary();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,6 +17,7 @@ app.use(express.json())
 
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/posts',require('./routes/posts'));
+app.use('/api/upload',require('./routes/upload'));
 
 
 app.use((err,req,res,next)=>{
