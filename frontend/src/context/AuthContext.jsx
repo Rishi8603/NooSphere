@@ -5,21 +5,26 @@ export const AuthContext=createContext();
 
 export const AuthProvider=({children})=>{
   const[user,setUser]=useState(null);
+  const [loading,setLoading] = useState(true);
 
-  useEffect(()=>{
-    const token=localStorage.getItem("token");
-    if(token){
-      const decoded=jwtDecode(token);
-      setUser(decoded.user)
-    }
-  },[]);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    setTimeout(() => {
+      if (token) {
+        const decoded = jwtDecode(token);
+        setUser(decoded.user);
+      }
+      setLoading(false);
+    }, 800); // 1 second delay
+  }, []);
 
   const logout=()=>{
     localStorage.removeItem("token")
     setUser(null);
   }
   return(
-    <AuthContext.Provider value={{user,setUser,logout}}>
+    <AuthContext.Provider value={{user,setUser,logout,loading}}>
       {children}
     </AuthContext.Provider>
   );

@@ -88,5 +88,18 @@ const updatePost = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+const getPostsByUser = async (req, res) => {
+  try {
+    const posts = await Post.find({ user: req.params.userId })
+      .populate('user', 'name')
+      .sort({ date: -1 });
 
-module.exports = { createPost, getPosts, deletePost, updatePost };
+    res.json(posts);
+
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+module.exports = { createPost, getPosts, deletePost, updatePost,getPostsByUser };
