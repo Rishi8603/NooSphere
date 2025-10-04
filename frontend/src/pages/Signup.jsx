@@ -11,6 +11,7 @@ const Signup = () => {
     password: "",
   });
   const [error, setError]=useState("")
+  const [isSuccess, setIsSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false); 
   const navigate=useNavigate();
 
@@ -26,6 +27,7 @@ const Signup = () => {
     try{
       const data=await signup(formData);//call backend
       console.log("SignUp success:" ,data)
+      setIsSuccess(true);
       navigate('/auth')
     }catch(err){
       console.log("Signup error:",err);
@@ -39,6 +41,7 @@ const Signup = () => {
         <h2 className="text-2xl mb-4">Signup</h2>
 
         {error && <p className="text-red-500">{error}</p>}
+        {isSuccess && <p className="text-green-500 mb-2">Successfully Created!</p>}
 
         <input
           name="name"

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL='http://localhost:5000/api/posts'
+const API_URL = '/api/posts';
 
 export const getPosts = async () => {
   try{
@@ -28,6 +28,7 @@ export const createPost=async(postData)=>{
     };
 
     const response=await axios.post(API_URL,postData,config)
+    return response.data
   }catch(error){
     console.error("error creating post", error);
     throw error;
@@ -75,4 +76,9 @@ export const updatePost = async (postId, updatedData) => {
     console.error("Error updating post:", error);
     throw error;
   }
+};
+
+export const getUserPosts=async(userId)=>{
+  const response=await axios.get(`${API_URL}/user/${userId}`);
+  return response.data;
 };

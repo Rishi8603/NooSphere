@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/upload';
+const API_URL = '/api/upload';
 
 export const uploadFile = async (file) => {
   try {
