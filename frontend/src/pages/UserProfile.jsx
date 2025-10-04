@@ -51,15 +51,22 @@ const UserProfile = () => {
       <h1 className="text-4xl font-bold mb-4">{userInfo.name}'s Profile</h1>
       <hr className="mb-6" />
       <h2 className="text-2xl font-semibold mb-4">Posts by {userInfo.name}:</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {userPosts.length>0 ? (
-          userPosts.map((post)=>(
-            <div key={post._id} className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+
+      <div className="flex flex-col gap-6">
+        {userPosts.length > 0 ? (
+          userPosts.map((post) => (
+            <div
+              key={post._id}
+              className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow duration-300"
+            >
               <h3 className="text-xl font-bold mb-2">{post.headline}</h3>
               <p className="text-gray-700 mb-4">{post.text}</p>
               <div className="flex flex-wrap gap-2 mb-4">
                 {post.tags.map((tag, index) => (
-                  <span key={index} className="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">
+                  <span
+                    key={index}
+                    className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full"
+                  >
                     #{tag}
                   </span>
                 ))}
@@ -77,7 +84,7 @@ const UserProfile = () => {
               </small>
             </div>
           ))
-        ):(
+        ) : (
           <p>This user hasn't posted any materials yet</p>
         )}
       </div>

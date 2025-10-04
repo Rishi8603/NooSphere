@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Authpage from "./pages/Authpage";
-// import Dashboard from "./pages/Dashboard";
+import Layout from './Components/Layout';
 import Homepage from "./pages/Homepage";
 import UserProfile from "./pages/UserProfile";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -12,10 +12,13 @@ const App = () => {
       <Routes>
         <Route path="/auth" element={<Authpage />} />
         
-        <Route path="/"
+        <Route
+          path="/"
           element={
             <ProtectedRoute>
-              <Homepage/>
+              <Layout> 
+                <Homepage />
+              </Layout>
             </ProtectedRoute>
           }
         />
@@ -23,7 +26,9 @@ const App = () => {
           path="/user/:userId"
           element={
             <ProtectedRoute>
-              <UserProfile />
+              <Layout> 
+                <UserProfile />
+              </Layout>
             </ProtectedRoute>
           }
         />

@@ -44,22 +44,12 @@ const Homepage = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <div className="w-1/4 border-r bg-white flex-shrink-0">
-        <Sidebar />
-      </div>
-
-      <div className="w-3/4 flex flex-col">
-        <div className="p-2 border-b flex-shrink-0">
-          <CreatePost onPostCreated={fetchPosts} />
-        </div>
-
-        <div className="flex-grow overflow-y-auto p-4">
-          <Feed posts={posts} loading={loading} onDelete={handleDeletePost} onUpdate={handleUpdatePost} />
-        </div>
-      </div>
+    <div className="flex flex-col gap-3 max-w-2xl mx-auto px-4 py-8">
+      <CreatePost onPostCreated={fetchPosts} />
+      <Feed posts={posts} loading={loading} onDelete={handleDeletePost} onUpdate={handleUpdatePost} />
     </div>
   );
+
 };
 
 export default Homepage;

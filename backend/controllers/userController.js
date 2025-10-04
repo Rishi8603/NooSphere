@@ -14,5 +14,25 @@ const getUserProfile = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
+const updateUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.id; // from authMiddleware
+    const { name, bio } = req.body;
+    const updatedFields = {};
+    if (name) updatedFields.name = name;
+    if (bio !== undefined) updatedFields.bio = bio;
 
-module.exports = { getUserProfile };
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $set: updatedFields },
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    res.json(user);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server Error');
+  }
+};
+
+module.exports = { getUserProfile, updateUserProfile };
