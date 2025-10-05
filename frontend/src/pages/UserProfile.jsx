@@ -14,6 +14,9 @@ const UserProfile = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [editPhoto, setEditPhoto] = useState(null);
+  const [previewPhoto, setPreviewPhoto] = useState("");
+
 
 
   const fetchPostsData = async () => {
@@ -62,13 +65,20 @@ const UserProfile = () => {
     setLoading(true);
     setError("");
     try {
-      await updateMe({ name: editName, bio: editBio });
-      await fetchProfileData();
+      const formData = new FormData();
+      formData.append('name', editName);
+      formData.append('bio', editBio);
+      if (editPhoto) formData.append('photo', editPhoto);
+
+      await updateMe(formData); 
       setShowModal(false);
+      setEditPhoto(null);
+      setPreviewPhoto(""); 
       setSuccess("Profile updated successfully!");
       setTimeout(() => setSuccess(""), 3000); 
     } catch (err) {
-      setError("Failed to update profile.");
+      if (err.response?.data?.error) setError(err.response.data.error);
+      else setError("Failed to update profile.");
     } finally {
       setLoading(false);
     }
@@ -77,7 +87,16 @@ const UserProfile = () => {
   return (
     <div>
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-4">{userInfo.name}'s Profile</h1>
+        <div className="flex items-center gap-4 mb-4">
+          <img
+            src={userInfo.photo || "https://ui-avatars.com/api/?name=" + userInfo.name}
+            alt="Profile Avatar"
+            className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+          />
+          <h1 className="text-2xl font-bold">{userInfo.name}</h1>
+        </div>
+
+        
         {userInfo.bio && (
           <p className="text-lg text-gray-500 mb-4">{userInfo.bio}</p>
         )}
@@ -151,6 +170,23 @@ const UserProfile = () => {
                     rows={3}
                   />
                 </label>
+              <input
+                type="file"
+                accept="image/*"
+                className="mb-2"
+                onChange={e => {
+                  setEditPhoto(e.target.files?.[0]);
+                  setPreviewPhoto(e.target.files?.[0] && URL.createObjectURL(e.target.files[0]));
+                }}
+              />
+              {previewPhoto && (
+                <img
+                  src={previewPhoto}
+                  alt="Preview"
+                  className="w-20 h-20 rounded-full object-cover mx-auto mb-4"
+                />
+              )}
+
                 {error && <p className="text-red-500">{error}</p>}
                 {success && <p className="text-green-600 text-sm">{success}</p>}
 
@@ -163,7 +199,11 @@ const UserProfile = () => {
                 </button>
               </form>
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setShowModal(false);
+                  setEditPhoto(null);
+                  setPreviewPhoto("");
+                }}
                 className="absolute top-2 right-2 text-gray-500 hover:text-gray-900 cursor-pointer"
               >×</button>
             </div>
