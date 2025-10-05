@@ -15,7 +15,7 @@ const Sidebar = () => {
     <div className="md:w-64 w-16 bg-gray-50 h-screen p-2 md:p-4 border-r border-gray-200 flex flex-col justify-between transition-all duration-300">
       <div>
         <Link to="/" className="text-2xl font-bold mb-8 hidden md:block">
-          Noosphere
+          NooSphere
         </Link>
         <nav className="flex flex-col space-y-2">
 

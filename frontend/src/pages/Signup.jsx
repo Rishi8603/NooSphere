@@ -28,7 +28,8 @@ const Signup = () => {
       const data=await signup(formData);//call backend
       console.log("SignUp success:" ,data)
       setIsSuccess(true);
-      navigate('/auth')
+      
+      navigate('/');
     }catch(err){
       console.log("Signup error:",err);
       setError(err.message || "signup failed")

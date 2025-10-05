@@ -48,11 +48,11 @@ const login=async(req,res)=>{
 
     let user = await User.findOne({ email: lowerCaseEmail });
     if (!user) {
-      return res.status(400).json({ error: "please try again ladle..user nhi mila hei db mein" })
+      return res.status(404).json({ error: "please try again ladle..user nhi mila hei db mein" })
     }
 
     const passwordComp = await bcrypt.compare(password, user.password);
-    if (!passwordComp) return res.status(400).json({ error: "glt password hei" })
+    if (!passwordComp) return res.status(401).json({ error: "glt password hei" })
 
     //if password match ho jata hei than jwt generate kro 
     const payload = {

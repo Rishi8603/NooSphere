@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const cloudinary = require("cloudinary").v2;
 
 const getUserProfile = async (req, res) => {
   try {
@@ -14,6 +15,7 @@ const getUserProfile = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
+
 const updateUserProfile = async (req, res) => {
   try {
     const userId = req.user.id; // from authMiddleware
@@ -21,6 +23,24 @@ const updateUserProfile = async (req, res) => {
     const updatedFields = {};
     if (name) updatedFields.name = name;
     if (bio !== undefined) updatedFields.bio = bio;
+
+    if (req.file) {
+      const uploadFromBuffer = (buffer) => {
+        return new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "profile_avatars" },
+            (error, result) => {
+              if (error) return reject(error);
+              resolve(result);
+            }
+          );
+          stream.end(buffer);
+        });
+      };
+
+      const result = await uploadFromBuffer(req.file.buffer);
+      updatedFields.photo = result.secure_url;
+    }
 
     const user = await User.findByIdAndUpdate(
       userId,

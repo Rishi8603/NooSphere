@@ -1,5 +1,3 @@
-// In src/services/uploadService.js
-
 import axios from 'axios';
 
 const API_URL = '/api/upload';
