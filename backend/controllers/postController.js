@@ -28,7 +28,7 @@ const getPosts = async (req, res) => {
   try {
     //.populate() in Mongoose is a method that replaces a referenced ObjectId in a document
     // with the actual document from another collection.
-    const posts = await Post.find().populate('user', 'name').sort({ date: -1 });    
+    const posts = await Post.find().populate('user', 'name photo').sort({ date: -1 });    
     res.json(posts);
   } catch (error) {
     console.error(error.message);

@@ -1,6 +1,7 @@
 import React,{useContext, useState} from 'react';
 import { AuthContext } from '../context/AuthContext';
 import EditPost from '../components/EditPost';
+import { Link } from 'react-router-dom';
 
 
 const Feed = ({ posts, loading, onDelete, onUpdate }) => {
@@ -44,7 +45,14 @@ const Feed = ({ posts, loading, onDelete, onUpdate }) => {
                   </>
                 )}
               </div>
-
+                <Link to={`/user/${post.user._id}`} className="flex items-center gap-2 mb-2 hover:bg-gray-100 p-1 rounded transition">
+                  <img
+                    src={post.user.photo || `https://ui-avatars.com/api/?name=${post.user.name}`}
+                    alt={post.user.name}
+                    className="w-10 h-10 rounded-full object-cover border-2 border-gray-300"
+                  />
+                  <span className="font-semibold text-gray-700">{post.user.name}</span>
+                </Link>  
               <h2 className="text-2xl font-semibold">{post.headline}</h2>
               <div className="text-sm text-gray-500 mt-1">
                 <span>Posted by: <strong>{post.user?.name || 'Unknown User'}</strong></span>
