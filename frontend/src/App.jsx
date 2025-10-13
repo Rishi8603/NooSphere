@@ -4,6 +4,7 @@ import Authpage from "./pages/Authpage";
 import Layout from './components/Layout';
 import Homepage from "./pages/Homepage";
 import UserProfile from "./pages/UserProfile";
+import Settings from "./pages/Settings";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
@@ -30,6 +31,12 @@ const App = () => {
                 <UserProfile />
               </Layout>
             </ProtectedRoute>
+          }
+        />
+        <Route path="/settings" element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
           }
         />
         <Route path="*" element={<Navigate to="/auth" />} />
