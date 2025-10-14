@@ -1,15 +1,27 @@
 // frontend/src/Components/Sidebar.jsx
 import React, { useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 const Sidebar = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleCreatePostClick = () => {
+    if (location.pathname !== "/") {
+      navigate("/");
+    } else {
+      const el = document.getElementById("main-scroll");
+      el?.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   const handleLogout = () => {
     logout();
     navigate('/auth');
   };
+
 
   return (
     <div className="md:w-64 w-16 bg-gray-50 h-screen p-2 md:p-4 border-r border-gray-200 flex flex-col justify-between transition-all duration-300">
@@ -57,9 +69,7 @@ const Sidebar = () => {
 
           {/* CreatePost */}
           <button
-            onClick={() => {
-              document.getElementById('main-scroll').scrollTo({ top: 0, behavior: 'smooth' });
-            }}
+            onClick={handleCreatePostClick}
 
             className="group relative flex items-center gap-3 px-4 py-2 text-lg text-gray-700 rounded-md hover:bg-gray-200 w-full text-left"
           >

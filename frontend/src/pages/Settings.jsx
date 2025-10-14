@@ -4,9 +4,10 @@ import { deleteAccount } from '../services/settings';
 const handleDelete = async () => {
   if (window.confirm("Are you sure you want to delete your account? This action cannot be undone!")) {
     try {
-      await deleteAccount();
+      const res = await deleteAccount();
       window.location.href = "/auth";
     } catch (error) {
+      console.error(error);
       alert("Failed to delete your account.");
     }
   }

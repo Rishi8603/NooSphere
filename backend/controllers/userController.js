@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Post = require('../models/Post'); 
 const cloudinary = require("cloudinary").v2;
 
 const getUserProfile = async (req, res) => {
@@ -55,4 +56,17 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
-module.exports = { getUserProfile, updateUserProfile };
+const deleteAccount = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    await User.findByIdAndDelete(userId);
+
+    await Post.deleteMany({ user: userId });
+    res.status(200).json({ message: "Account deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete account" });
+  }
+};
+
+
+module.exports = { getUserProfile, updateUserProfile, deleteAccount };

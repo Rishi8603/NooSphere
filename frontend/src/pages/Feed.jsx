@@ -20,7 +20,7 @@ const Feed = ({ posts, loading, onDelete, onUpdate }) => {
   
   return (
     <div className="space-y-2">
-      {posts.map(post => (
+      {posts.filter(post => post && post._id && post.user).map(post => (
         <div key={post._id} className="p-4 border rounded-lg shadow bg-white relative">
 
           {editingPostId === post._id ? (

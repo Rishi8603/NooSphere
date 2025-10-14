@@ -1,5 +1,8 @@
 import axios from 'axios';
 
 export const deleteAccount = async () => {
-  return axios.delete('/api/user/delete', { withCredentials: true });
+  const token = localStorage.getItem("token"); 
+  return axios.delete('/api/users/delete', {
+    headers: { Authorization: `Bearer ${token}` }
+  });
 };

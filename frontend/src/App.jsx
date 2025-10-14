@@ -13,32 +13,12 @@ const App = () => {
       <Routes>
         <Route path="/auth" element={<Authpage />} />
         
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Layout> 
-                <Homepage />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/user/:userId"
-          element={
-            <ProtectedRoute>
-              <Layout> 
-                <UserProfile />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/settings" element={
-          <ProtectedRoute>
-            <Settings />
-          </ProtectedRoute>
-          }
-        />
+        <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+          <Route path="/" element={<Homepage />} />
+          <Route path="/user/:userId" element={<UserProfile />} />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
+        
         <Route path="*" element={<Navigate to="/auth" />} />
       </Routes>
     </Router>

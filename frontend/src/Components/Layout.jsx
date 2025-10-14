@@ -1,5 +1,6 @@
 import React from 'react';
 import Sidebar from './Sidebar';
+import { Outlet } from 'react-router-dom';
 
 const Layout = ({ children }) => {
   return (
@@ -9,7 +10,7 @@ const Layout = ({ children }) => {
       </div>
 
       <main id="main-scroll" className="flex-1 overflow-y-auto">
-        {children}
+        <Outlet/>{/* we don't use children anymore*/}
       </main>
     </div>
   );
