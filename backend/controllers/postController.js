@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Post=require('../models/Post')
 
 const createPost=async(req,res)=>{
@@ -28,8 +29,29 @@ const getPosts = async (req, res) => {
   try {
     //.populate() in Mongoose is a method that replaces a referenced ObjectId in a document
     // with the actual document from another collection.
-    const posts = await Post.find().populate('user', 'name photo').sort({ date: -1 });    
-    res.json(posts);
+    const posts = await Post.find().populate('user', 'name photo').sort({ date: -1 });
+    
+    const userId = req.user?.id?.toString();
+
+    const result = posts.map(post => {
+      const liked = userId
+        ? post.likes.some(id => id.toString() === userId)
+        : false; 
+
+      const obj = post.toObject();
+
+      delete obj.likes;
+
+      return {
+        ...obj,
+        liked,
+        likesCount: post.likesCount,
+        comments:post.comments,
+        commentsCount:post.commentsCount
+      };
+    });
+
+    res.json(result);
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Internal Server Error");
@@ -102,4 +124,119 @@ const getPostsByUser = async (req, res) => {
   }
 };
 
-module.exports = { createPost, getPosts, deletePost, updatePost,getPostsByUser };
+const toggleLike = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const postId = req.params.postId;
+
+    let post = await Post.findOneAndUpdate(
+      { _id: postId, likes: { $ne: userId } }, 
+      { $addToSet: { likes: userId }, $inc: { likesCount: 1 } }, 
+      { new: true, select: 'likesCount likes' }
+    );
+
+    if (post) {
+      return res.json({ liked: true, likesCount: post.likesCount });
+    }
+
+    post = await Post.findOneAndUpdate(
+      { _id: postId, likes: userId },   
+      { $pull: { likes: userId }, $inc: { likesCount: -1 } }, 
+      { new: true, select: 'likesCount likes' }
+    );
+
+    if (post) {
+      return res.json({ liked: false, likesCount: post.likesCount });
+    }
+
+    return res.status(404).json({ error: 'Post not found' });
+  } catch (err) {
+    res.status(500).json({ error: err.message || 'Server error' });
+  }
+};
+
+const getLikeMeta = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const postId = req.params.postId;
+
+    const post = await Post.findById(postId).select('likes likesCount');
+    if (!post) return res.status(404).json({ error: 'Post not found' });
+
+    const liked = post.likes.some(
+      id => id.toString() === userId.toString()
+    );
+
+    res.json({ liked, likesCount: post.likesCount });
+  } catch (err) {
+    res.status(500).json({ error: err.message || 'Server error' });
+  }
+};
+
+const addComment =async(req,res)=>{
+  try{
+    const userId = req.user.id;
+    const postId = req.params.postId;
+
+    const {text}=req.body;
+
+    const comment = {text,user:userId,createdAt:new Date()};
+    const post=await Post.findByIdAndUpdate(
+      postId,
+      {
+        $push: { comments: comment },
+        $inc:{commentsCount:1}
+      },
+      {new: true}
+    ).populate('comments.user', 'name photo'); // show commenter info
+
+    const newComment = post.comments[post.comments.length - 1];
+    res.json({ comment: newComment, commentsCount: post.commentsCount });
+  } catch (err){
+    res.status(500).json({ error: err.message || 'Server error' });
+  }
+}
+
+const getComments =async(req,res)=>{
+  try{
+    const post = await Post.findById(req.params.postId)
+      .populate('comments.user', 'username profilePic');
+
+    if (!post) return res.status(404).json({ message: 'Post not found' });
+
+    res.json({ comments: post.comments });
+  }catch(err){
+    res.status(500).json({ error: err.message || 'Server error' });
+  }
+}
+
+const deleteComment =async(req,res)=>{
+  try{
+    let post = await Post.findById(req.params.postId);;
+    if (!post) return res.status(404).send("Not Found")
+
+    const comment = post.comments.id(req.params.commentId);
+    if (!comment) return res.status(404).send("Comment not found");
+
+    if (comment.user.toString() !== req.user.id) {
+      return res.status(401).send("Not Allowed, You can only delete your own comment.")
+    }
+
+    comment.deleteOne(); 
+    await post.save();
+
+    post.commentsCount = post.comments.length;
+    await post.save();
+
+    res.json({
+      success: true,
+      message: "Comment has been deleted",
+      commentId: req.params.commentId
+    });
+  }catch (err) {
+    res.status(500).json({ error: err.message || 'Server error' });
+  }
+}
+
+
+module.exports = { createPost, getPosts, deletePost, updatePost, getPostsByUser, toggleLike, getLikeMeta, addComment, getComments, deleteComment };
