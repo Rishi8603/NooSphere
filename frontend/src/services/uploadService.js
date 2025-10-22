@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = '/api/upload';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const uploadFile = async (file) => {
   try {
@@ -10,7 +10,7 @@ export const uploadFile = async (file) => {
     }
 
     const formData = new FormData();
-    formData.append('file', file); 
+    formData.append('file', file);
 
     const config = {
       headers: {
@@ -19,10 +19,9 @@ export const uploadFile = async (file) => {
       },
     };
 
-    const response = await axios.post(API_URL, formData, config);
+    const response = await axios.post(`${API_BASE_URL}/upload`, formData, config);
 
     return response.data.url;
-
   } catch (error) {
     console.error("Error uploading file:", error);
     throw error;

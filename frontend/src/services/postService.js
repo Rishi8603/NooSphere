@@ -1,11 +1,11 @@
 import axios from "axios";
 
-const API_URL = '/api/posts';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const getPosts = async () => {
   try{
-    console.log("Making API call to:", API_URL); 
-    const response=await axios.get(API_URL);
+    console.log("Making API call to:", API_BASE_URL); 
+    const response = await axios.get(`${API_BASE_URL}/posts`);
     return response.data;
   }catch(error){
     console.error("Error fetching posts:",error);
@@ -27,7 +27,7 @@ export const createPost=async(postData)=>{
       },
     };
 
-    const response=await axios.post(API_URL,postData,config)
+    const response = await axios.post(`${API_BASE_URL}/posts`,postData,config)
     return response.data
   }catch(error){
     console.error("error creating post", error);
@@ -49,7 +49,8 @@ export const deletePost = async (postId) => {
     };
 
     // Send a DELETE request to the specific post's URL
-    const response = await axios.delete(`${API_URL}/${postId}`, config);
+    const response = await axios.delete(`${API_BASE_URL}/posts/${postId}`
+, config);
     return response.data;
   } catch (error){
     console.error("Error deleting post:", error);
@@ -70,7 +71,7 @@ export const updatePost = async (postId, updatedData) => {
     };
 
     // Send a PUT request with the updated data
-    const response = await axios.put(`${API_URL}/${postId}`, updatedData, config);
+    const response = await axios.put(`${API_BASE_URL}/posts/${postId}`, updatedData, config);
     return response.data;
   } catch (error) {
     console.error("Error updating post:", error);
@@ -79,6 +80,6 @@ export const updatePost = async (postId, updatedData) => {
 };
 
 export const getUserPosts=async(userId)=>{
-  const response=await axios.get(`${API_URL}/user/${userId}`);
+  const response = await axios.get(`${API_BASE_URL}/posts/user/${userId}`);
   return response.data;
 };
