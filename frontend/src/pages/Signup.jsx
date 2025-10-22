@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import {useNavigate} from 'react-router-dom'
 import { signup } from "../services/authService";
-import invisibleIcon from '../assets/invisible.png';
-import visibleIcon from '../assets/visible.png';
+import visibleIcon from "assets/visible.png";
+import invisibleIcon from "assets/invisible.png";
+
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -28,11 +29,12 @@ const Signup = () => {
       const data=await signup(formData);//call backend
       console.log("SignUp success:" ,data)
       setIsSuccess(true);
-      
-      navigate('/');
+      setTimeout(() => navigate('/'), 1000);
     }catch(err){
-      console.log("Signup error:",err);
-      setError(err.message || "signup failed")
+      console.error("Signup error:", err);
+      const message =
+        err.response?.data?.message || err.message || "Signup failed";
+      setError(message);
     }
   };
 
