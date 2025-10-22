@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { useParams } from 'react-router-dom';
-import Spinner from '../components/Spinner';
+import Spinner from '../Components/Spinner';
 import {getUserPosts} from '../services/postService';
 import { getUserProfile, updateMe } from '../services/userService';
 

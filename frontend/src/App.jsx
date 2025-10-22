@@ -1,11 +1,11 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Authpage from "./pages/Authpage";
-import Layout from "./components/Layout";
+import Layout from "./Components/Layout";
 import Homepage from "./pages/Homepage";
 import UserProfile from "./pages/UserProfile";
 import Settings from "./pages/Settings";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./Components/ProtectedRoute";
 
 const App = () => {
   return (

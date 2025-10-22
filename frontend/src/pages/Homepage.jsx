@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../Components/Sidebar';
 import Feed from './Feed';
-import CreatePost from '../components/CreatePost';
+import CreatePost from '../Components/CreatePost';
 import { getPosts, deletePost, createPost, updatePost } from '../services/postService'; 
 
 const Homepage = () => {
