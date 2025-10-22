@@ -21,10 +21,27 @@ app.use('/api/upload',require('./routes/upload'));
 app.use('/api/users', require('./routes/users'));
 
 
-app.use((err,req,res,next)=>{
+
+app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({message: err.message +"error hei bhai..Server.js se bol rha hun"})
-})
+
+  let statusCode = 500;
+  let errorMessage = 'Server Error';
+
+  if (err.name === 'JsonWebTokenError') {
+    statusCode = 401;
+    errorMessage = 'Token is not valid';
+  } else if (err.status) { 
+    statusCode = err.status;
+    errorMessage = err.message;
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    return res.status(statusCode).json({ message: err.message, error: err });
+  }
+
+  res.status(statusCode).json({ message: errorMessage });
+});
 
 app.listen(PORT, ()=>{
   console.log(`Server is running on ${PORT}`);

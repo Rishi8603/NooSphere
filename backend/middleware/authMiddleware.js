@@ -22,9 +22,12 @@ const authMiddleware = (req, res, next) => {
     req.user = data.user
 
     next()
-  } catch (error) {
-    res.status(401).send({ error: "Access denied : Invalid  token" })
+  }catch (error) {
+    error.status = 401;
+    error.message = "Access denied: Invalid token";
+    next(error);
   }
+
 }
 
 module.exports = authMiddleware;
