@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../services/authService";
 import { AuthContext } from "../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
-import visibleIcon from "assets/visible.png";
-import invisibleIcon from "assets/invisible.png";
+import visibleIcon from "../assets/visible.png";
+import invisibleIcon from "../assets/invisible.png";
 
 
 const Login = () => {

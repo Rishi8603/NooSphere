@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import {useNavigate} from 'react-router-dom'
 import { signup } from "../services/authService";
-import visibleIcon from "assets/visible.png";
-import invisibleIcon from "assets/invisible.png";
+import visibleIcon from "../assets/visible.png";
+import invisibleIcon from "../assets/invisible.png";
 
 
 const Signup = () => {
