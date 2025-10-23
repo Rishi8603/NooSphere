@@ -5,6 +5,7 @@ import Layout from "./Components/Layout";
 import Homepage from "./pages/Homepage";
 import UserProfile from "./pages/UserProfile";
 import Settings from "./pages/Settings";
+import PostDetail from './pages/PostDetail';
 import ProtectedRoute from "./Components/ProtectedRoute";
 
 const App = () => {
@@ -17,6 +18,7 @@ const App = () => {
           <Route path="/" element={<Homepage />} />
           <Route path="/user/:userId" element={<UserProfile />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/posts/:postId" element={<PostDetail />} />
         </Route>
         
         <Route path="*" element={<Navigate to="/auth" />} />

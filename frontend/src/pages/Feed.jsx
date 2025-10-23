@@ -1,11 +1,12 @@
 import React, { useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import EditPost from '../Components/EditPost';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Feed = ({ posts, loading, onDelete, onUpdate, onToggleLike }) => {
   const { user } = useContext(AuthContext);
   const [editingPostId, setEditingPostId] = useState(null);
+  const navigate=useNavigate();
 
   if (loading) return <p>Loading posts...</p>;
   if (posts.length === 0) return <p>No posts yet. Be the first to create one!</p>;
@@ -43,7 +44,7 @@ const Feed = ({ posts, loading, onDelete, onUpdate, onToggleLike }) => {
 };
 
 function PostCard({ post, user, onDelete, onToggleLike, onEdit }) {
-
+  const navigate = useNavigate();
   const handleLikeClick = async () => {
     try {
       await onToggleLike(post._id);
@@ -117,8 +118,9 @@ function PostCard({ post, user, onDelete, onToggleLike, onEdit }) {
         {/* Comment Button */}
         <button
           className="flex items-center gap-1 text-lg font-semibold focus:outline-none text-[#767676] hover:text-blue-600"
+          onClick={() => navigate(`/posts/${post._id}`)}
         >
-          💬
+          💬 
           <span className="text-base">{post.commentsCount ?? 0}</span>
         </button>
       </div>

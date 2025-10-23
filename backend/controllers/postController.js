@@ -188,7 +188,7 @@ const addComment =async(req,res)=>{
         $inc:{commentsCount:1}
       },
       {new: true}
-    ).populate('comments.user', 'name photo'); // show commenter info
+    ).populate('comments.user', 'name photo username profilePic'); 
 
     const newComment = post.comments[post.comments.length - 1];
     res.json({ comment: newComment, commentsCount: post.commentsCount });
@@ -200,7 +200,7 @@ const addComment =async(req,res)=>{
 const getComments =async(req,res)=>{
   try{
     const post = await Post.findById(req.params.postId)
-      .populate('comments.user', 'username profilePic');
+      .populate('comments.user', 'name photo username profilePic');
 
     if (!post) return res.status(404).json({ message: 'Post not found' });
 

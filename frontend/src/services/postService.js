@@ -107,3 +107,37 @@ export const getPostById = async (postId) => {
   const response = await axios.get(`${API_BASE_URL}/posts/${postId}`, config);
   return response.data;
 };
+
+export const getComments = async (postId) => {
+  const token = localStorage.getItem('token');
+  const config = token
+    ? { headers: { Authorization: `Bearer ${token}` } }
+    : {};
+  const response = await axios.get(`${API_BASE_URL}/posts/${postId}/comment`, config);
+  return response.data; 
+}
+
+
+export const addComment = async (postId, commentText) => {
+  const token = localStorage.getItem('token');
+  if (!token) throw new Error("No auth token found. Please log in.");
+  const config = { headers: { Authorization: `Bearer ${token}` } };
+  const response = await axios.post(
+    `${API_BASE_URL}/posts/${postId}/comment`,
+    { text: commentText },
+    config
+  );
+  return response.data; 
+};
+
+export const deleteComment = async (postId, commentId) => {
+  const token = localStorage.getItem('token');
+  if (!token) throw new Error("No auth token found. Please log in.");
+  const config = { headers: { Authorization: `Bearer ${token}` } };
+
+  const response = await axios.delete(
+    `${API_BASE_URL}/posts/${postId}/comment/${commentId}`,
+    config
+  );
+  return response.data; // { success, message, commentId }
+};
