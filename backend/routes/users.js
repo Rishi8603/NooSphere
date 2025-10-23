@@ -6,8 +6,8 @@ const { getUserProfile, updateUserProfile } = require('../controllers/userContro
 const multer=require('multer');
 const upload = multer();
 
-router.get('/:userId', getUserProfile);
 router.put('/me', authMiddleware, upload.single('photo'), updateUserProfile);
 router.delete('/delete', authMiddleware, deleteAccount);
+router.get('/:userId', getUserProfile);
 
 module.exports = router;

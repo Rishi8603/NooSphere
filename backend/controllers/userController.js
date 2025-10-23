@@ -11,9 +11,9 @@ const getUserProfile = async (req, res) => {
     }
 
     res.json(user);
-  } catch (error) {
+  }catch (error) {
     console.error(error.message);
-    res.status(500).send('Server Error');
+    res.status(500).json({ error: "Server Error" });
   }
 };
 
@@ -49,10 +49,14 @@ const updateUserProfile = async (req, res) => {
       { new: true, runValidators: true }
     ).select('-password');
 
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
     res.json(user);
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send('Server Error');
+  }catch (error) {
+    console.error('Update profile error:', error.message);
+    res.status(500).json({ error: 'Server Error' });
   }
 };
 
@@ -63,8 +67,9 @@ const deleteAccount = async (req, res) => {
 
     await Post.deleteMany({ user: userId });
     res.status(200).json({ message: "Account deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to delete account" });
+  }catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Server Error" });
   }
 };
 

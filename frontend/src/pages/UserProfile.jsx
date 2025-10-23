@@ -1,38 +1,40 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import Spinner from '../Components/Spinner';
-import {getUserPosts} from '../services/postService';
+import { getUserPosts } from '../services/postService';
 import { getUserProfile, updateMe } from '../services/userService';
+import { AuthContext } from '../context/AuthContext';
 
 const UserProfile = () => {
-  const {userId}=useParams();
+  const { userId } = useParams();
+  const { user: currentUser } = useContext(AuthContext);
   const [userInfo, setUserInfo] = useState(null);
-  const [userPosts,setUserPosts] = useState([]);
+  const [userPosts, setUserPosts] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [editName, setEditName] = useState(userInfo?.name || "");
-  const [editBio, setEditBio] = useState(userInfo?.bio || "No bio yet");
+  const [editName, setEditName] = useState("");
+  const [editBio, setEditBio] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [editPhoto, setEditPhoto] = useState(null);
   const [previewPhoto, setPreviewPhoto] = useState("");
 
-
+  // Check if this is the current user's profile
+  const isOwnProfile = currentUser && currentUser.id === userId;
 
   const fetchPostsData = async () => {
     try {
       const postsData = await getUserPosts(userId);
       setUserPosts(postsData);
-      console.log(postsData);
     } catch (error) {
       console.error('Failed to fetch user posts:', error);
       setUserPosts([]);
     }
   };
+
   const fetchProfileData = async () => {
     try {
       const userData = await getUserProfile(userId);
-      console.log(userId);
       setUserInfo(userData);
     } catch (error) {
       console.error('Failed to fetch user profile:', error);
@@ -47,11 +49,10 @@ const UserProfile = () => {
 
   useEffect(() => {
     if (showModal && userInfo) {
-      setEditName(userInfo.name);
+      setEditName(userInfo.name || "");
       setEditBio(userInfo.bio || "");
     }
   }, [showModal, userInfo]);
-
 
   if (userInfo === null) {
     return <Spinner />;
@@ -60,23 +61,30 @@ const UserProfile = () => {
   if (!userInfo.name) {
     return <div className="text-center mt-8">User not found.</div>;
   }
+
   const handleEdit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setSuccess("");
+
     try {
       const formData = new FormData();
       formData.append('name', editName);
       formData.append('bio', editBio);
       if (editPhoto) formData.append('photo', editPhoto);
 
-      await updateMe(formData); 
+      const updatedUser = await updateMe(formData);
+
+      // Update local state with the response
+      setUserInfo(updatedUser);
       setShowModal(false);
       setEditPhoto(null);
-      setPreviewPhoto(""); 
+      setPreviewPhoto("");
       setSuccess("Profile updated successfully!");
-      setTimeout(() => setSuccess(""), 3000); 
+      setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
+      console.error('Update error:', err);
       if (err.response?.data?.error) setError(err.response.data.error);
       else setError("Failed to update profile.");
     } finally {
@@ -87,25 +95,34 @@ const UserProfile = () => {
   return (
     <div>
       <div className="container mx-auto px-4 py-8">
+        {success && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            {success}
+          </div>
+        )}
+
         <div className="flex items-center gap-4 mb-4">
           <img
             src={userInfo.photo || "https://ui-avatars.com/api/?name=" + userInfo.name}
             alt="Profile Avatar"
             className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
           />
-          <h1 className="text-2xl font-bold">{userInfo.name}</h1>
+          <div>
+            <h1 className="text-2xl font-bold">{userInfo.name}</h1>
+            {userInfo.bio && (
+              <p className="text-lg text-gray-500">{userInfo.bio}</p>
+            )}
+          </div>
         </div>
 
-        
-        {userInfo.bio && (
-          <p className="text-lg text-gray-500 mb-4">{userInfo.bio}</p>
+        {isOwnProfile && (
+          <button
+            onClick={() => setShowModal(true)}
+            className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 mb-4"
+          >
+            Edit Profile
+          </button>
         )}
-        <button
-          onClick={() => setShowModal(true)}
-          className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          Edit Profile
-        </button>
 
         <hr className="mb-6" />
 
@@ -148,67 +165,80 @@ const UserProfile = () => {
           )}
         </div>
       </div>
-        {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md relative">
-              <form onSubmit={handleEdit} className="space-y-4">
-                <label>
-                  Name:
-                  <input
-                    className="border p-2 rounded w-full mt-1"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    required
-                  />
-                </label>
-                <label>
-                  Bio:
-                  <textarea
-                    className="border p-2 rounded w-full mt-1"
-                    value={editBio}
-                    onChange={(e) => setEditBio(e.target.value)}
-                    rows={3}
-                  />
-                </label>
-              <input
-                type="file"
-                accept="image/*"
-                className="mb-2"
-                onChange={e => {
-                  setEditPhoto(e.target.files?.[0]);
-                  setPreviewPhoto(e.target.files?.[0] && URL.createObjectURL(e.target.files[0]));
-                }}
-              />
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md relative">
+            <h2 className="text-xl font-bold mb-4">Edit Profile</h2>
+            <form onSubmit={handleEdit} className="space-y-4">
+              <label>
+                Name:
+                <input
+                  className="border p-2 rounded w-full mt-1"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  required
+                />
+              </label>
+              <label>
+                Bio:
+                <textarea
+                  className="border p-2 rounded w-full mt-1"
+                  value={editBio}
+                  onChange={(e) => setEditBio(e.target.value)}
+                  rows={3}
+                />
+              </label>
+              <label>
+                Profile Picture:
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="w-full mt-1"
+                  onChange={e => {
+                    const file = e.target.files?.[0];
+                    setEditPhoto(file);
+                    if (file) {
+                      setPreviewPhoto(URL.createObjectURL(file));
+                    }
+                  }}
+                />
+              </label>
               {previewPhoto && (
                 <img
                   src={previewPhoto}
                   alt="Preview"
-                  className="w-20 h-20 rounded-full object-cover mx-auto mb-4"
+                  className="w-20 h-20 rounded-full object-cover mx-auto"
                 />
               )}
 
-                {error && <p className="text-red-500">{error}</p>}
-                {success && <p className="text-green-600 text-sm">{success}</p>}
+              {error && <p className="text-red-500 text-sm">{error}</p>}
 
+              <div className="flex gap-2">
                 <button
                   type="submit"
-                  className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                  className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex-1 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
                   disabled={loading}
                 >
                   {loading ? "Saving..." : "Save"}
                 </button>
-              </form>
-              <button
-                onClick={() => {
-                  setShowModal(false);
-                  setEditPhoto(null);
-                  setPreviewPhoto("");
-                }}
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-900 cursor-pointer"
-              >×</button>
-            </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowModal(false);
+                    setEditPhoto(null);
+                    setPreviewPhoto("");
+                    setError("");
+                  }}
+                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
-        )}
+        </div>
+      )}
     </div>
   );
 };
