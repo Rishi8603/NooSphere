@@ -238,5 +238,18 @@ const deleteComment =async(req,res)=>{
   }
 }
 
+const getPostById = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.postId)
+      .populate('user', 'name photo') // Also populate comments, etc. as needed
+      .lean();
+    if (!post) return res.status(404).json({ error: 'Post not found' });
+    res.json(post);
+  } catch (err) {
+    res.status(500).json({ error: 'Something went wrong.' });
+  }
+};
 
-module.exports = { createPost, getPosts, deletePost, updatePost, getPostsByUser, toggleLike, getLikeMeta, addComment, getComments, deleteComment };
+
+
+module.exports = { createPost, getPosts, deletePost, updatePost, getPostsByUser, toggleLike, getLikeMeta, addComment, getComments, deleteComment, getPostById };

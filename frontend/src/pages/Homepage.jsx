@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../Components/Sidebar';
 import Feed from './Feed';
 import CreatePost from '../Components/CreatePost';
-import { getPosts, deletePost, createPost, updatePost } from '../services/postService'; 
+import { getPosts, deletePost, createPost, updatePost, toggleLike, getPostById } from '../services/postService'; 
 
 const Homepage = () => {
   const [posts, setPosts] = useState([]);
@@ -43,10 +43,47 @@ const Homepage = () => {
     }
   };
 
+  const handleToggleLike = async (postId) => {
+    setPosts(prevPosts =>
+      prevPosts.map(post =>
+        post._id === postId
+          ? {
+            ...post,
+            liked: !post.liked,  // instantly flip color
+            likesCount: post.liked
+              ? post.likesCount - 1
+              : post.likesCount + 1, // adjust count instantly
+          }
+          : post
+      )
+    );
+
+    try {
+      await toggleLike(postId); // sync with backend
+    } catch (error) {
+      console.error("Failed to toggle like:", error);
+      // Optional rollback in case of error
+      setPosts(prevPosts =>
+        prevPosts.map(post =>
+          post._id === postId
+            ? {
+              ...post,
+              liked: !post.liked,
+              likesCount: post.liked
+                ? post.likesCount - 1
+                : post.likesCount + 1,
+            }
+            : post
+        )
+      );
+    }
+  };
+
+
   return (
     <div className="flex flex-col gap-3 max-w-2xl mx-auto px-4 py-8">
       <CreatePost onPostCreated={fetchPosts} />
-      <Feed posts={posts} loading={loading} onDelete={handleDeletePost} onUpdate={handleUpdatePost} />
+      <Feed posts={posts} loading={loading} onDelete={handleDeletePost} onUpdate={handleUpdatePost} onToggleLike={handleToggleLike} />
     </div>
   );
 
