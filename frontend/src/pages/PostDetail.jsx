@@ -69,7 +69,7 @@ const PostDetail =()=>{
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.backgroundColor = "#f5f5f5";
-          e.currentTarget.style.borderColor = "#007bff";
+          e.currentTarget.style.borderColor = "black";
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.backgroundColor = "white";

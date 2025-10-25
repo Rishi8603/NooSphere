@@ -107,7 +107,7 @@ const FollowersFollowingPage = () => {
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.backgroundColor = "#f5f5f5";
-          e.currentTarget.style.borderColor = "#007bff";
+          e.currentTarget.style.borderColor = "black";
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.backgroundColor = "white";
@@ -141,7 +141,7 @@ const FollowersFollowingPage = () => {
               borderRadius: "50%",
               objectFit: "cover",
               marginRight: "16px",
-              border: "3px solid #007bff"
+              border: "3px solid"
             }}
           />
           <div>
