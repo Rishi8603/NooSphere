@@ -22,7 +22,6 @@ const FollowersFollowingPage = () => {
 
     const fetchLists = async () => {
       try {
-        // Check if user is authenticated
         const token = localStorage.getItem('token') || sessionStorage.getItem('token');
         if (!token) {
           setError("Please log in to view this page");
@@ -30,7 +29,6 @@ const FollowersFollowingPage = () => {
           return;
         }
 
-        // Fetch all data in parallel
         const [followersData, followingData, ownerData] = await Promise.all([
           getFollowers(userId),
           getFollowing(userId),
@@ -42,7 +40,6 @@ const FollowersFollowingPage = () => {
         setProfileOwner(ownerData);
       } catch (e) {
         console.error("Error fetching data:", e);
-        // Don't set error state - just use empty arrays
         setFollowers([]);
         setFollowing([]);
         setProfileOwner(null);
@@ -54,10 +51,9 @@ const FollowersFollowingPage = () => {
     fetchLists();
   }, [userId]);
 
-  // Handle profile click with navigation state
   const handleProfileClick = (e, targetUserId) => {
     e.preventDefault();
-    // Use navigate instead of Link to ensure proper routing
+    // navigate instead of Link to ensure proper routing
     navigate(`/user/${targetUserId}`, {
       replace: false,
       state: { from: 'followers-page' }
@@ -92,7 +88,7 @@ const FollowersFollowingPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="max-w-2xl mx-auto px-4 py-8">
       <button
         onClick={() => navigate(-1)}
         style={{

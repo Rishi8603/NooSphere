@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { getPostById, getComments, addComment, deleteComment } from "../services/postService";
 import { AuthContext } from "../context/AuthContext";
 
 const PostDetail =()=>{
+  const navigate = useNavigate();
   const { user } = useContext(AuthContext); 
   const { postId } = useParams();
   const [post, setPost] = useState(null);
@@ -50,6 +51,34 @@ const PostDetail =()=>{
   if (loading || !post) return <div>Loading...</div>;
   return(
     <div className="max-w-2xl mx-auto px-4 py-8">
+      <button
+        onClick={() => navigate(-1)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          padding: "8px 16px",
+          marginBottom: "16px",
+          border: "1px solid #e0e0e0",
+          borderRadius: "8px",
+          backgroundColor: "white",
+          cursor: "pointer",
+          fontSize: "14px",
+          color: "#333",
+          transition: "all 0.2s",
+          fontWeight: "500"
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = "#f5f5f5";
+          e.currentTarget.style.borderColor = "#007bff";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = "white";
+          e.currentTarget.style.borderColor = "#e0e0e0";
+        }}
+      >
+        <span style={{ marginRight: "6px", fontSize: "18px" }}>←</span>
+        Back to Feed
+      </button>
       <div className="bg-white rounded-lg shadow p-4 mb-6">
         <h2 className="text-2xl font-bold mb-1">{post.headline}</h2>
         <div className="text-gray-600 mb-2">By: {post.user?.name || "Unknown"}</div>
@@ -72,7 +101,7 @@ const PostDetail =()=>{
         <h3 className="text-xl font-semibold mb-4">Comments</h3>
         <div className="space-y-4">
           {comments.length === 0 ? (
-            <div>Koi comment nahi hai!</div>
+            <div>no comments yet!</div>
           ) : (
               comments.map(comment => (
                 <div key={comment._id} className="border-b pb-2 flex items-center justify-between">

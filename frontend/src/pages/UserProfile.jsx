@@ -8,7 +8,7 @@ import { followUser, unfollowUser, getFollowers, getFollowing } from "../service
 
 const UserProfile = () => {
   const { userId } = useParams();
-  const { user: currentUser } = useContext(AuthContext); // FIXED: Extract user from context
+  const { user: currentUser } = useContext(AuthContext); 
 
   const [userInfo, setUserInfo] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
@@ -132,61 +132,63 @@ const UserProfile = () => {
   };
 
   return (
-    <div>
-      <div className="container mx-auto px-4 py-8">
+    <div className="flex flex-col gap-3 max-w-2xl mx-auto px-4 py-8">
+      <div>
         {success && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{success}</div>
         )}
-        <div className="flex items-center gap-4 mb-4">
-          <img
-            src={userInfo.photo || `https://ui-avatars.com/api/?name=${userInfo.name}`}
-            alt="Profile Avatar"
-            className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
-          />
-          <div>
-            <h1 className="text-2xl font-bold">{userInfo.name}</h1>
-            {userInfo.bio && <p className="text-lg text-gray-500">{userInfo.bio}</p>}
+        {/* Profile Header */}
+        <div className="flex justify-between items-start mb-6">
+          {/* Left side: profile picture + info */}
+          <div className="flex items-center gap-4">
+            <img
+              src={userInfo.photo || `https://ui-avatars.com/api/?name=${userInfo.name}`}
+              alt="Profile Avatar"
+              className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+            />
+            <div>
+              <h1 className="text-2xl font-bold">{userInfo.name}</h1>
+              {userInfo.bio && <p className="text-lg text-gray-500">{userInfo.bio}</p>}
+              <div className="mt-2 flex gap-6 text-sm">
+                <Link to={`/user/${userId}/followers?tab=followers`}>
+                  <span className="font-bold hover:underline">{followers.length}</span> Followers
+                </Link>
+                <Link to={`/user/${userId}/following?tab=following`}>
+                  <span className="font-bold hover:underline">{following.length}</span> Following
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Right side: action button */}
+          <div className="mr-10 mt-8">
+            {!isOwnProfile ? (
+              isFollowing ? (
+                <button
+                  className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+                  onClick={handleUnfollow}
+                >
+                  Unfollow
+                </button>
+              ) : (
+                <button
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  onClick={handleFollow}
+                >
+                  Follow
+                </button>
+              )
+            ) : (
+              <button
+                onClick={() => setShowModal(true)}
+                className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+              >
+                Edit Profile
+              </button>
+            )}
           </div>
         </div>
-        <div className="mt-4 flex gap-8">
-          <div>
-            <Link to={`/user/${userId}/followers?tab=followers`}>
-              <span className="font-bold cursor-pointer hover:underline">{followers.length}</span> Followers
-            </Link>
-          </div>
-          <div>
-            <Link to={`/user/${userId}/following?tab=following`}>
-              <span className="font-bold cursor-pointer hover:underline">{following.length}</span> Following
-            </Link>
-          </div>
-        </div>
-        {/* Only show follow/unfollow if NOT own profile */}
-        {!isOwnProfile && (
-          isFollowing ? (
-            <button
-              className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 mt-4"
-              onClick={handleUnfollow}
-            >
-              Unfollow
-            </button>
-          ) : (
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4"
-              onClick={handleFollow}
-            >
-              Follow
-            </button>
-          )
-        )}
-        {/* Edit profile only on own profile */}
-        {isOwnProfile && (
-          <button
-            onClick={() => setShowModal(true)}
-            className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 mb-4"
-          >
-            Edit Profile
-          </button>
-        )}
+
         <hr className="mb-6" />
         <h2 className="text-2xl font-semibold mb-4">Posts by {userInfo.name}</h2>
         <div className="flex flex-col gap-6">

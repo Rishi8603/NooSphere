@@ -65,7 +65,6 @@ const deletePost= async(req,res)=>{
       return res.status(404).send("Not Found")
     }
 
-    //check if user trying to delete the post is the one who created it
     if(post.user.toString() !==req.user.id){
       return res.status(401).send("Not Allowed, you hadn't created this post")
     }
@@ -100,7 +99,7 @@ const updatePost = async (req, res) => {
     post = await Post.findByIdAndUpdate(
       req.params.id,
       { $set: newPostData },
-      { new: true } // {new: true} tells Mongoose to return the document after the update
+      { new: true } // tells Mongoose to return the document after the update
     ).populate('user','name');
 
     res.json({ post });
@@ -217,7 +216,7 @@ const deleteComment = async (req, res) => {
       {
         _id: req.params.postId,
         "comments._id": req.params.commentId,
-        "comments.user": req.user.id, // ensures only owner can delete
+        "comments.user": req.user.id, 
       },
       {
         $pull: { comments: { _id: req.params.commentId } },
@@ -246,7 +245,7 @@ const deleteComment = async (req, res) => {
 const getPostById = async (req, res) => {
   try {
     const post = await Post.findById(req.params.postId)
-      .populate('user', 'name photo') // Also populate comments, etc. as needed
+      .populate('user', 'name photo') 
       .lean();
     if (!post) return res.status(404).json({ error: 'Post not found' });
     res.json(post);

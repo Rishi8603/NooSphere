@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-// The onSave prop comes from Homepage -> Feed -> EditPost
 const EditPost = ({ post, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
     headline: post?.headline || "",

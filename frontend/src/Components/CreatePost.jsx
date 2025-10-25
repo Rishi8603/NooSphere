@@ -36,10 +36,10 @@ const CreatePost = ({ onPostCreated }) => {
     setIsUploading(true);
 
     try {
-      // Step 1: Upload the file
+      //Upload the file
       const uploadedFileUrl = await uploadFile(selectedFile);
 
-      // Step 2: Create the post with the file URL
+      //Create the post with the file URL
       const finalPostData = {
         ...postData,
         fileUrl: uploadedFileUrl,
@@ -50,6 +50,9 @@ const CreatePost = ({ onPostCreated }) => {
 
       // Reset the form
       setIsSuccess(true);
+      setTimeout(() => {
+        setIsSuccess(false);
+      }, 1000);
       onPostCreated();
       setPostData({ headline: "", text: "", tags: "" });
       setSelectedFile(null);

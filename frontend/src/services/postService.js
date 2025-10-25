@@ -84,9 +84,9 @@ export const updatePost = async (postId, updatedData) => {
 export const getUserPosts = async (userId) => {
   try {
     const token = localStorage.getItem('token'); 
-    const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; // ADD THIS
+    const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; 
 
-    const response = await axios.get(`${API_BASE_URL}/posts/user/${userId}`, config); // ADD config HERE
+    const response = await axios.get(`${API_BASE_URL}/posts/user/${userId}`, config); 
     return response.data;
   } catch (error) {
     console.error("Error fetching user posts:", error);
@@ -147,5 +147,5 @@ export const deleteComment = async (postId, commentId) => {
     `${API_BASE_URL}/posts/${postId}/comment/${commentId}`,
     config
   );
-  return response.data; // { success, message, commentId }
+  return response.data; 
 };
