@@ -129,31 +129,32 @@ const toggleLike = async (req, res) => {
     const userId = req.user.id;
     const postId = req.params.postId;
 
-    let post = await Post.findOneAndUpdate(
-      { _id: postId, likes: { $ne: userId } }, 
-      { $addToSet: { likes: userId }, $inc: { likesCount: 1 } }, 
-      { new: true, select: 'likesCount likes' }
-    );
-
-    if (post) {
-      return res.json({ liked: true, likesCount: post.likesCount });
+    const post = await Post.findById(postId).select("likes likesCount");
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
     }
 
-    post = await Post.findOneAndUpdate(
-      { _id: postId, likes: userId },   
-      { $pull: { likes: userId }, $inc: { likesCount: -1 } }, 
-      { new: true, select: 'likesCount likes' }
-    );
+    const hasLiked = post.likes.includes(userId);
 
-    if (post) {
-      return res.json({ liked: false, likesCount: post.likesCount });
+    if (hasLiked) {
+      post.likes.pull(userId);
+      post.likesCount = Math.max(0, post.likesCount - 1);
+    } else {
+      post.likes.addToSet(userId);
+      post.likesCount += 1;
     }
 
-    return res.status(404).json({ error: 'Post not found' });
+    await post.save();
+
+    res.json({
+      liked: !hasLiked,
+      likesCount: post.likesCount,
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message || 'Server error' });
+    res.status(500).json({ error: err.message || "Server error" });
   }
 };
+
 
 const getLikeMeta = async (req, res) => {
   try {
@@ -210,33 +211,37 @@ const getComments =async(req,res)=>{
   }
 }
 
-const deleteComment =async(req,res)=>{
-  try{
-    let post = await Post.findById(req.params.postId);;
-    if (!post) return res.status(404).send("Not Found")
+const deleteComment = async (req, res) => {
+  try {
+    const post = await Post.findOneAndUpdate(
+      {
+        _id: req.params.postId,
+        "comments._id": req.params.commentId,
+        "comments.user": req.user.id, // ensures only owner can delete
+      },
+      {
+        $pull: { comments: { _id: req.params.commentId } },
+        $inc: { commentsCount: -1 },
+      },
+      { new: true }
+    );
 
-    const comment = post.comments.id(req.params.commentId);
-    if (!comment) return res.status(404).send("Comment not found");
-
-    if (comment.user.toString() !== req.user.id) {
-      return res.status(401).send("Not Allowed, You can only delete your own comment.")
+    if (!post) {
+      return res
+        .status(404)
+        .send("Post or comment not found, or not authorized");
     }
-
-    comment.deleteOne(); 
-    await post.save();
-
-    post.commentsCount = post.comments.length;
-    await post.save();
 
     res.json({
       success: true,
       message: "Comment has been deleted",
-      commentId: req.params.commentId
+      commentId: req.params.commentId,
     });
-  }catch (err) {
-    res.status(500).json({ error: err.message || 'Server error' });
+  } catch (err) {
+    res.status(500).json({ error: err.message || "Server error" });
   }
-}
+};
+
 
 const getPostById = async (req, res) => {
   try {

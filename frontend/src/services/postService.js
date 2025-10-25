@@ -81,9 +81,17 @@ export const updatePost = async (postId, updatedData) => {
   }
 };
 
-export const getUserPosts=async(userId)=>{
-  const response = await axios.get(`${API_BASE_URL}/posts/user/${userId}`);
-  return response.data;
+export const getUserPosts = async (userId) => {
+  try {
+    const token = localStorage.getItem('token'); 
+    const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; // ADD THIS
+
+    const response = await axios.get(`${API_BASE_URL}/posts/user/${userId}`, config); // ADD config HERE
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user posts:", error);
+    throw error;
+  }
 };
 
 export const toggleLike = async (postId) => {

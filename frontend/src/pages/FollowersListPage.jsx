@@ -1,90 +1,291 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams, Link, useNavigate } from "react-router-dom";
 import { getFollowers, getFollowing } from "../services/actions";
+import { getUserProfile } from "../services/userService";
 
 const FollowersFollowingPage = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialTab = searchParams.get("tab") === "following" ? "following" : "followers";
   const [tab, setTab] = useState(initialTab);
   const { userId } = useParams();
+
+  const [profileOwner, setProfileOwner] = useState(null);
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     setLoading(true);
+    setError(null);
+
     const fetchLists = async () => {
       try {
-        const [followersData, followingData] = await Promise.all([
+        // Check if user is authenticated
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        if (!token) {
+          setError("Please log in to view this page");
+          setLoading(false);
+          return;
+        }
+
+        // Fetch all data in parallel
+        const [followersData, followingData, ownerData] = await Promise.all([
           getFollowers(userId),
           getFollowing(userId),
+          getUserProfile(userId),
         ]);
-        setFollowers(followersData);
-        setFollowing(followingData);
+
+        setFollowers(followersData || []);
+        setFollowing(followingData || []);
+        setProfileOwner(ownerData);
       } catch (e) {
+        console.error("Error fetching data:", e);
+        // Don't set error state - just use empty arrays
         setFollowers([]);
         setFollowing([]);
+        setProfileOwner(null);
       } finally {
         setLoading(false);
       }
     };
+
     fetchLists();
   }, [userId]);
 
-  return (
-    <div className="max-w-lg mx-auto mt-8">
-      {/* Tabs (NO route change) */}
-      <div className="flex border-b mb-6">
+  // Handle profile click with navigation state
+  const handleProfileClick = (e, targetUserId) => {
+    e.preventDefault();
+    // Use navigate instead of Link to ensure proper routing
+    navigate(`/user/${targetUserId}`, {
+      replace: false,
+      state: { from: 'followers-page' }
+    });
+  };
+
+  if (error) {
+    return (
+      <div style={{
+        maxWidth: "600px",
+        margin: "80px auto 20px",
+        padding: "20px",
+        textAlign: "center"
+      }}>
+        <p style={{ color: "#dc3545", fontSize: "18px" }}>{error}</p>
         <button
-          className={`flex-1 py-2 text-lg font-semibold ${tab === "followers" ? "border-b-2 border-blue-500 text-blue-800" : "text-gray-600"
-            }`}
+          onClick={() => navigate('/login')}
+          style={{
+            marginTop: "16px",
+            padding: "10px 24px",
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer"
+          }}
+        >
+          Go to Login
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <button
+        onClick={() => navigate(-1)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          padding: "8px 16px",
+          marginBottom: "16px",
+          border: "1px solid #e0e0e0",
+          borderRadius: "8px",
+          backgroundColor: "white",
+          cursor: "pointer",
+          fontSize: "14px",
+          color: "#333",
+          transition: "all 0.2s",
+          fontWeight: "500"
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = "#f5f5f5";
+          e.currentTarget.style.borderColor = "#007bff";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = "white";
+          e.currentTarget.style.borderColor = "#e0e0e0";
+        }}
+      >
+        <span style={{ marginRight: "6px", fontSize: "18px" }}>←</span>
+        Back to Profile
+      </button>
+
+      {/* Profile Owner Header Section */}
+      {profileOwner && (
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          padding: "10px",
+          backgroundColor: "#f8f9fa",
+          borderRadius: "12px",
+          marginBottom: "24px",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          cursor: "pointer"
+        }}
+          onClick={(e) => handleProfileClick(e, userId)}
+        >
+          <img
+            src={profileOwner.photo || profileOwner.profilePic || `https://ui-avatars.com/api/?name=${profileOwner.name}`}
+            alt={profileOwner.name}
+            style={{
+              width: "80px",
+              height: "80px",
+              borderRadius: "50%",
+              objectFit: "cover",
+              marginRight: "16px",
+              border: "3px solid #007bff"
+            }}
+          />
+          <div>
+            <h2 style={{
+              margin: "0 0 4px 0",
+              fontSize: "24px",
+              color: "#333"
+            }}>
+              {profileOwner.name}
+            </h2>
+          </div>
+        </div>
+      )}
+
+      {/* Tab Buttons */}
+      <div style={{
+        display: "flex",
+        borderBottom: "2px solid #e0e0e0",
+        marginBottom: "20px"
+      }}>
+        <button
           onClick={() => setTab("followers")}
+          style={{
+            flex: 1,
+            padding: "12px",
+            border: "none",
+            background: "none",
+            cursor: "pointer",
+            fontSize: "16px",
+            fontWeight: tab === "followers" ? "bold" : "normal",
+            color: tab === "followers" ? "#007bff" : "#666",
+            borderBottom: tab === "followers" ? "3px solid #007bff" : "none"
+          }}
         >
           Followers ({followers.length})
         </button>
         <button
-          className={`flex-1 py-2 text-lg font-semibold ${tab === "following" ? "border-b-2 border-blue-500 text-blue-800" : "text-gray-600"
-            }`}
           onClick={() => setTab("following")}
+          style={{
+            flex: 1,
+            padding: "12px",
+            border: "none",
+            background: "none",
+            cursor: "pointer",
+            fontSize: "16px",
+            fontWeight: tab === "following" ? "bold" : "normal",
+            color: tab === "following" ? "#007bff" : "#666",
+            borderBottom: tab === "following" ? "3px solid #007bff" : "none"
+          }}
         >
           Following ({following.length})
         </button>
       </div>
-      {/* Section Content */}
-      {loading ? (
-        <div className="text-gray-500 text-center py-8">Loading...</div>
-      ) : tab === "followers" ? (
-        <ul>
-          {followers.length === 0 ? (
-            <li>No followers found.</li>
-          ) : (
-            followers.map(u => (
-              <li key={u.id} className="flex items-center gap-4 py-2 border-b">
-                <img src={u.photo || "/default.png"} alt="profile" className="rounded-full w-10 h-10" />
-                <div>
-                  <div className="font-semibold">{u.name}</div>
-                  {u.username && <div className="text-gray-500">@{u.username}</div>}
-                </div>
-              </li>
-            ))
+
+      {/* Loading State */}
+      {loading && <p style={{ textAlign: "center", color: "#666" }}>Loading...</p>}
+
+      {/* User Lists */}
+      {!loading && (
+        <div>
+          {tab === "followers" && (
+            <div>
+              {followers.length === 0 ? (
+                <p style={{ textAlign: "center", color: "#999" }}>No followers yet</p>
+              ) : (
+                followers.map(user => (
+                  <div
+                    key={user._id}
+                    onClick={(e) => handleProfileClick(e, user._id)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      padding: "12px",
+                      borderBottom: "1px solid #eee",
+                      cursor: "pointer",
+                      transition: "background 0.2s"
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = "#f5f5f5"}
+                    onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                  >
+                    <img
+                      src={user.photo || user.profilePic || `https://ui-avatars.com/api/?name=${user.name}`}
+                      alt={user.name}
+                      style={{
+                        width: "50px",
+                        height: "50px",
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                        marginRight: "12px"
+                      }}
+                    />
+                    <div>
+                      <div style={{ fontWeight: "500", fontSize: "16px" }}>{user.name}</div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           )}
-        </ul>
-      ) : (
-        <ul>
-          {following.length === 0 ? (
-            <li>No following found.</li>
-          ) : (
-            following.map(u => (
-              <li key={u.id} className="flex items-center gap-4 py-2 border-b">
-                <img src={u.photo || "/default.png"} alt="profile" className="rounded-full w-10 h-10" />
-                <div>
-                  <div className="font-semibold">{u.name}</div>
-                  {u.username && <div className="text-gray-500">@{u.username}</div>}
-                </div>
-              </li>
-            ))
+
+          {tab === "following" && (
+            <div>
+              {following.length === 0 ? (
+                <p style={{ textAlign: "center", color: "#999" }}>Not following anyone yet</p>
+              ) : (
+                following.map(user => (
+                  <div
+                    key={user._id}
+                    onClick={(e) => handleProfileClick(e, user._id)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      padding: "12px",
+                      borderBottom: "1px solid #eee",
+                      cursor: "pointer",
+                      transition: "background 0.2s"
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = "#f5f5f5"}
+                    onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                  >
+                    <img
+                      src={user.photo || user.profilePic || `https://ui-avatars.com/api/?name=${user.name}`}
+                      alt={user.name}
+                      style={{
+                        width: "50px",
+                        height: "50px",
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                        marginRight: "12px"
+                      }}
+                    />
+                    <div>
+                      <div style={{ fontWeight: "500", fontSize: "16px" }}>{user.name}</div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           )}
-        </ul>
+        </div>
       )}
     </div>
   );

@@ -8,7 +8,7 @@ import { followUser, unfollowUser, getFollowers, getFollowing } from "../service
 
 const UserProfile = () => {
   const { userId } = useParams();
-  const currentUser = useContext(AuthContext);
+  const { user: currentUser } = useContext(AuthContext); // FIXED: Extract user from context
 
   const [userInfo, setUserInfo] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
@@ -53,7 +53,7 @@ const UserProfile = () => {
       try {
         const followersList = await getFollowers(userId);
         setFollowers(followersList);
-        setIsFollowing(followersList.some(u => u.id === currentUser?.id));
+        setIsFollowing(followersList.some(u => u._id === currentUser?.id));
         const followingList = await getFollowing(userId);
         setFollowing(followingList);
       } catch {
@@ -113,7 +113,8 @@ const UserProfile = () => {
     try {
       await followUser(userId, token);
       setIsFollowing(true);
-      setFollowers(prev => [...prev, currentUser]);
+      const updatedFollowers = await getFollowers(userId);
+      setFollowers(updatedFollowers);
     } catch (err) {
       alert(err?.response?.data?.message || "Error following user");
     }
@@ -123,7 +124,8 @@ const UserProfile = () => {
     try {
       await unfollowUser(userId, token);
       setIsFollowing(false);
-      setFollowers(prev => prev.filter(u => u.id !== currentUser?.id));
+      const updatedFollowers = await getFollowers(userId);
+      setFollowers(updatedFollowers);
     } catch (err) {
       alert(err?.response?.data?.message || "Error unfollowing user");
     }
@@ -148,12 +150,12 @@ const UserProfile = () => {
         </div>
         <div className="mt-4 flex gap-8">
           <div>
-            <Link to={`/user/${userId}/followers`}>
+            <Link to={`/user/${userId}/followers?tab=followers`}>
               <span className="font-bold cursor-pointer hover:underline">{followers.length}</span> Followers
             </Link>
           </div>
           <div>
-            <Link to={`/user/${userId}/following`}>
+            <Link to={`/user/${userId}/following?tab=following`}>
               <span className="font-bold cursor-pointer hover:underline">{following.length}</span> Following
             </Link>
           </div>

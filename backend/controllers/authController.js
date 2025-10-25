@@ -11,7 +11,7 @@ const signup=async (req,res)=>{
 
     let user = await User.findOne({ email: lowerCaseEmail });
     if (user) {
-      return res.status(400).json({ error: "Sorry nhi bn payega bcz account already existed" })
+      return res.status(400).json({ error: "can't create, account already exists!" })
     }
 
     //password hashing
@@ -48,7 +48,7 @@ const login=async(req,res)=>{
 
     let user = await User.findOne({ email: lowerCaseEmail });
     if (!user) {
-      return res.status(404).json({ error: "please try again ladle..user nhi mila hei db mein" })
+      return res.status(404).json({ error: "User not found in db" })
     }
 
     const passwordComp = await bcrypt.compare(password, user.password);
@@ -65,8 +65,6 @@ const login=async(req,res)=>{
         email:user.email
       }
     }
-    //debugging
-    console.log("JWT Secret being used:", process.env.JWT_SECRET);
 
     //jwt.sign() function payload ar secret key milakar ek unique token string
     //generate krega

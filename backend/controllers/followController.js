@@ -49,7 +49,7 @@ exports.getFollowers = async (req, res) => {
   try {
     const userId = req.params.id;
 
-    const followers = await Follow.find({ following: userId }).populate('follower', 'name username photo profilePic');
+    const followers = await Follow.find({ following: userId }).populate('follower', '_id name username photo profilePic');
 
     res.status(200).json({ followers: followers.map(f => f.follower) });
   } catch (error) {
@@ -61,7 +61,7 @@ exports.getFollowing = async (req, res) => {
   try {
     const userId = req.params.id;
 
-    const following = await Follow.find({ follower: userId }).populate('following', 'name username photo profilePic');
+    const following = await Follow.find({ follower: userId }).populate('following', '_id name username photo profilePic');
 
     res.status(200).json({ following: following.map(f => f.following) });
   } catch (error) {
