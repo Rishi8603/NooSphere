@@ -1,12 +1,9 @@
-import axios from 'axios';
-
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import api from './api';
 
 export const signup = async (userData) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/auth/signup`, userData);
-    return response.data; 
+    const response = await api.post('/auth/signup', userData);
+    return response.data;
   } catch (error) {
     if (error.response) {
       const msg =
@@ -24,11 +21,11 @@ export const signup = async (userData) => {
 
 export const login = async (credentials) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/auth/login`, credentials);
+    const response = await api.post('/auth/login', credentials);
     if (response.data.token) {
-      localStorage.setItem('token', response.data.token);  // Save token in browser
+      localStorage.setItem('token', response.data.token); // Save token in browser
     }
-    return response.data;  
+    return response.data;
   } catch (error) {
     if (error.response) {
       const msg =
@@ -36,7 +33,10 @@ export const login = async (credentials) => {
         error.response.data?.error ||
         "Login failed";
       throw new Error(msg);
+    } else if (error.request) {
+      throw new Error("Cannot connect to the server. Please check your connection.");
+    } else {
+      throw new Error(error.message);
     }
   }
 };
-

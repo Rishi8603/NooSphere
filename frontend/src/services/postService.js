@@ -1,79 +1,38 @@
-import axios from "axios";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import api from './api'; 
 
 export const getPosts = async () => {
-  try{
-    const token = localStorage.getItem('token');
-    const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-    const response = await axios.get(`${API_BASE_URL}/posts`, config);
-
+  try {
+    const response = await api.get('/posts');
     return response.data;
-  }catch(error){
-    console.error("Error fetching posts:",error);
+  } catch (error) {
+    console.error("Error fetching posts:", error);
     throw error;
   }
 };
 
-export const createPost=async(postData)=>{
-  try{
-    // Get the token from local storage
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error("No auth token found. Please log in.");
-    }
-
-    const config={
-      headers:{
-        'Authorization':`Bearer ${token}`,
-      },
-    };
-
-    const response = await axios.post(`${API_BASE_URL}/posts`,postData,config)
-    return response.data
-  }catch(error){
-    console.error("error creating post", error);
+export const createPost = async (postData) => {
+  try {
+    const response = await api.post('/posts', postData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating post", error);
     throw error;
   }
 };
 
 export const deletePost = async (postId) => {
   try {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error("No auth token found. Please log in.");
-    }
-
-    const config = {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    };
-
-    // Send a DELETE request to the specific post's URL
-    const response = await axios.delete(`${API_BASE_URL}/posts/${postId}`
-, config);
+    const response = await api.delete(`/posts/${postId}`);
     return response.data;
-  } catch (error){
+  } catch (error) {
     console.error("Error deleting post:", error);
     throw error;
   }
 };
+
 export const updatePost = async (postId, updatedData) => {
   try {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error("No auth token found. Please log in.");
-    }
-
-    const config = {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    };
-
-    // Send a PUT request with the updated data
-    const response = await axios.put(`${API_BASE_URL}/posts/${postId}`, updatedData, config);
+    const response = await api.put(`/posts/${postId}`,updatedData);
     return response.data;
   } catch (error) {
     console.error("Error updating post:", error);
@@ -83,69 +42,61 @@ export const updatePost = async (postId, updatedData) => {
 
 export const getUserPosts = async (userId) => {
   try {
-    const token = localStorage.getItem('token'); 
-    const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {}; 
-
-    const response = await axios.get(`${API_BASE_URL}/posts/user/${userId}`, config); 
+    const response = await api.get(`/posts/user/${userId}`);
     return response.data;
   } catch (error) {
-    console.error("Error fetching user posts:", error);
+    console.error(`Error fetching posts for user ${userId}:`, error);
     throw error;
   }
 };
 
 export const toggleLike = async (postId) => {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    throw new Error("No auth token found. Please log in.");
+  try {
+    const response = await api.post(`/posts/${postId}/like`);
+    return response.data;
+  } catch (error) {
+    console.error("Error liking post:", error);
+    throw error;
   }
-  const config = {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  };
-  return axios.post(`${API_BASE_URL}/posts/${postId}/like`, {}, config);
-}
+};
 
 export const getPostById = async (postId) => {
-  const token = localStorage.getItem('token');
-  const config = token
-    ? { headers: { Authorization: `Bearer ${token}` } }
-    : {};
-  const response = await axios.get(`${API_BASE_URL}/posts/${postId}`, config);
-  return response.data;
+  try {
+    const response = await api.get(`/posts/${postId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching post by ID:", error);
+    throw error;
+  }
 };
 
 export const getComments = async (postId) => {
-  const token = localStorage.getItem('token');
-  const config = token
-    ? { headers: { Authorization: `Bearer ${token}` } }
-    : {};
-  const response = await axios.get(`${API_BASE_URL}/posts/${postId}/comment`, config);
-  return response.data; 
-}
+  try {
+    const response = await api.get(`/posts/${postId}/comment`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    throw error;
+  }
+};
 
 
 export const addComment = async (postId, commentText) => {
-  const token = localStorage.getItem('token');
-  if (!token) throw new Error("No auth token found. Please log in.");
-  const config = { headers: { Authorization: `Bearer ${token}` } };
-  const response = await axios.post(
-    `${API_BASE_URL}/posts/${postId}/comment`,
-    { text: commentText },
-    config
-  );
-  return response.data; 
+  try {
+    const response = await api.post(`/posts/${postId}/comment`, { text: commentText });
+    return response.data;
+  } catch (error) {
+    console.error("Error adding comment:", error);
+    throw error;
+  }
 };
 
 export const deleteComment = async (postId, commentId) => {
-  const token = localStorage.getItem('token');
-  if (!token) throw new Error("No auth token found. Please log in.");
-  const config = { headers: { Authorization: `Bearer ${token}` } };
-
-  const response = await axios.delete(
-    `${API_BASE_URL}/posts/${postId}/comment/${commentId}`,
-    config
-  );
-  return response.data; 
+  try {
+    const response = await api.delete(`/posts/${postId}/comment/${commentId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+    throw error;
+  }
 };

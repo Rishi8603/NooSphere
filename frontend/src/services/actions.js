@@ -1,29 +1,41 @@
-import axios from "axios";
+import api from './api';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-export const followUser = async (userId, token) => {
-  return axios.post(
-    `${API_BASE_URL}/users/${userId}/follow`,
-    {},
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
+export const followUser = async (userId) => {
+  try {
+    const response = await api.post(`/users/${userId}/follow`);
+    return response.data;
+  } catch (error) {
+    console.error("Error following user:", error);
+    throw error;
+  }
 };
 
-export const unfollowUser = async (userId, token) => {
-  return axios.delete(`${API_BASE_URL}/users/${userId}/unfollow`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const unfollowUser = async (userId) => {
+  try {
+    const response = await api.delete(`/users/${userId}/unfollow`);
+    return response.data;
+  } catch (error) {
+    console.error("Error unfollowing user:", error);
+    throw error;
+  }
 };
 
 export const getFollowers = async (userId) => {
-  return axios
-    .get(`${API_BASE_URL}/users/${userId}/followers`)
-    .then((res) => res.data.followers);
+  try {
+    const response = await api.get(`/users/${userId}/followers`);
+    return response.data.followers;
+  } catch (error) {
+    console.error("Error fetching followers:", error);
+    throw error;
+  }
 };
 
 export const getFollowing = async (userId) => {
-  return axios
-    .get(`${API_BASE_URL}/users/${userId}/following`)
-    .then((res) => res.data.following);
+  try {
+    const response = await api.get(`/users/${userId}/following`);
+    return response.data.following;
+  } catch (error) {
+    console.error("Error fetching following:", error);
+    throw error;
+  }
 };
