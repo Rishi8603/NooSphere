@@ -52,7 +52,7 @@ const login=async(req,res)=>{
     }
 
     const passwordComp = await bcrypt.compare(password, user.password);
-    if (!passwordComp) return res.status(401).json({ error: "glt password hei" })
+    if (!passwordComp) return res.status(401).json({ error: "Wrong password!" })
 
     //if password match ho jata hei than jwt generate kro 
     const payload = {

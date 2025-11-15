@@ -11,7 +11,7 @@ const Authpage = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen">
+    <div className="flex flex-col justify-center items-center h-screen ">
       {/* Conditionally render either the Login or Signup component */}
       {isLoginView ? <Login /> : <Signup />}
 
