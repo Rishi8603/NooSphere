@@ -12,7 +12,7 @@ const generateWithGroq = async (messages, model = GROQ_MODEL) => {
     { model, messages, max_tokens: 600 },
     {
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey.trim()}`,
         'Content-Type': 'application/json',
       },
       timeout: 30000,
