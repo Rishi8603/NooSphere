@@ -29,6 +29,7 @@ app.use('/api/posts',require('./routes/posts'));
 app.use('/api/upload',require('./routes/upload'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api', require('./routes/follow'));
+app.use('/api/ai', require('./routes/ai'));
 
 
 
