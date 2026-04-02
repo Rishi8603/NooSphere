@@ -3,34 +3,46 @@ import Login from "./Login";
 import Signup from "./Signup";
 
 const Authpage = () => {
-  // This state determines which form to show
   const [isLoginView, setIsLoginView] = useState(true);
 
   const toggleView = () => {
-    setIsLoginView(!isLoginView); // Flips the boolean value
+    setIsLoginView(!isLoginView);
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen ">
-      {/* Conditionally render either the Login or Signup component */}
-      {isLoginView ? <Login /> : <Signup />}
+    <div className="auth-page">
+      <div className="auth-left">
+        <div className="globe-placeholder">
+          <span className="meridian"></span>
+          <span className="meridian"></span>
+          <span className="meridian"></span>
+          <span className="latitude"></span>
+          <span className="latitude"></span>
+        </div>
+        <div className="auth-brand">
+          <h1>NooSphere</h1>
+          <p>Connect. Share. Explore.</p>
+        </div>
+      </div>
 
-      <div className="mt-4">
-        {isLoginView ? (
-          <p>
-            Don't have an account?{" "}
-            <button onClick={toggleView} className="text-blue-500 hover:underline">
-              Sign up
-            </button>
-          </p>
-        ) : (
-          <p>
-            Already have an account?{" "}
-            <button onClick={toggleView} className="text-blue-500 hover:underline">
-              Log in
-            </button>
-          </p>
-        )}
+      <div className="auth-right">
+        <div className="auth-card">
+          {isLoginView ? <Login /> : <Signup />}
+
+          <div className="auth-toggle">
+            {isLoginView ? (
+              <p>
+                Don't have an account?
+                <button onClick={toggleView}>Sign up</button>
+              </p>
+            ) : (
+              <p>
+                Already have an account?
+                <button onClick={toggleView}>Log in</button>
+              </p>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

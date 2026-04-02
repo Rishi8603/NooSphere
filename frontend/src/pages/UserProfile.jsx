@@ -26,10 +26,8 @@ const UserProfile = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Are we viewing our own profile?
   const isOwnProfile = currentUser?.id === userId;
 
-  // Fetch user profile and posts
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
@@ -49,7 +47,6 @@ const UserProfile = () => {
       }
     };
 
-    // Followers / Following List + Follow Button status
     const fetchFollowData = async () => {
       try {
         const followersList = await getFollowers(userId);
@@ -68,7 +65,6 @@ const UserProfile = () => {
     fetchFollowData();
   }, [userId, currentUser?.id]);
 
-  // Show edit modal prefill
   useEffect(() => {
     if (showModal && userInfo) {
       setEditName(userInfo.name);
@@ -77,9 +73,8 @@ const UserProfile = () => {
   }, [showModal, userInfo]);
 
   if (userInfo === null) return <Spinner />;
-  if (!userInfo.name) return <div className="text-center mt-8">User not found.</div>;
+  if (!userInfo.name) return <div className="text-center mt-8" style={{ color: 'var(--text-muted)' }}>User not found.</div>;
 
-  // Handle profile edit
   const handleEdit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -107,7 +102,6 @@ const UserProfile = () => {
     }
   };
 
-  // Follow/Unfollow logic
   const token = localStorage.getItem("token");
 
   const handleFollow = async () => {
@@ -136,75 +130,66 @@ const UserProfile = () => {
     <div className="flex flex-col gap-3 max-w-2xl mx-auto px-4 py-8">
       <div>
         {success && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{success}</div>
+          <div className="auth-success mb-4">{success}</div>
         )}
-        {/* Profile Header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
-          {/* Left side: profile picture + info */}
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 flex-1">
             <img
-              src={userInfo.photo || `https://ui-avatars.com/api/?name=${userInfo.name}`}
+              src={userInfo.photo || `https://ui-avatars.com/api/?name=${userInfo.name}&background=222&color=888`}
               alt="Profile Avatar"
-              className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+              className="w-24 h-24 rounded-full object-cover"
+              style={{ border: '3px solid var(--border-color)' }}
             />
             <div className="text-center sm:text-left">
-              <h1 className="text-2xl font-bold">{userInfo.name}</h1>
-              {userInfo.bio && <p className="text-lg text-gray-500">{userInfo.bio}</p>}
-              <div className="mt-2 flex gap-6 text-sm justify-center sm:justify-start">
-                <Link to={`/user/${userId}/followers?tab=followers`}>
-                  <span className="font-bold hover:underline">{followers.length}</span> Followers
+              <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{userInfo.name}</h1>
+              {userInfo.bio && <p className="text-base mt-1" style={{ color: 'var(--text-secondary)' }}>{userInfo.bio}</p>}
+              <div className="mt-3 flex gap-6 text-sm justify-center sm:justify-start" style={{ color: 'var(--text-secondary)' }}>
+                <Link to={`/user/${userId}/followers?tab=followers`} className="hover:underline">
+                  <span className="font-bold" style={{ color: 'var(--text-primary)' }}>{followers.length}</span> Followers
                 </Link>
-                <Link to={`/user/${userId}/following?tab=following`}>
-                  <span className="font-bold hover:underline">{following.length}</span> Following
+                <Link to={`/user/${userId}/following?tab=following`} className="hover:underline">
+                  <span className="font-bold" style={{ color: 'var(--text-primary)' }}>{following.length}</span> Following
                 </Link>
               </div>
             </div>
           </div>
 
-          {/* Right side: action button */}
           <div className="flex justify-center sm:justify-end sm:mt-8">
             {!isOwnProfile ? (
               isFollowing ? (
-                <button
-                  className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
-                  onClick={handleUnfollow}
-                >
+                <button className="btn-ghost" onClick={handleUnfollow}>
                   Unfollow
                 </button>
               ) : (
-                <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                  onClick={handleFollow}
-                >
+                <button className="btn-primary" onClick={handleFollow}>
                   Follow
                 </button>
               )
             ) : (
-              <button
-                onClick={() => setShowModal(true)}
-                className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
-              >
+              <button onClick={() => setShowModal(true)} className="btn-ghost">
                 Edit Profile
               </button>
             )}
           </div>
         </div>
 
-        <hr className="mb-6" />
-        <h2 className="text-2xl font-semibold mb-4">Posts by {userInfo.name}</h2>
-        <div className="flex flex-col gap-6">
+        <hr style={{ borderColor: 'var(--border-color)' }} className="mb-6" />
+        <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Posts by {userInfo.name}</h2>
+        <div className="flex flex-col gap-4">
           {userPosts.length > 0 ? (
             userPosts.map(post => (
               <div
                 key={post.id}
-                className="bg-white rounded-lg shadow-md p-4 sm:p-6 border border-gray-200 hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+                className="dark-card cursor-pointer transition-all duration-200"
                 onClick={() => navigate(`/posts/${post._id}`)}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#3a3a3a'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-color)'; }}
               >
-                <h3 className="text-lg sm:text-xl font-bold mb-2">{post.headline}</h3>
-                <p className="text-gray-700 mb-4 text-sm sm:text-base">{post.text}</p>
-                <div className="flex flex-wrap gap-2 mb-4">
+                <h3 className="text-lg sm:text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>{post.headline}</h3>
+                <p className="mb-3 text-sm sm:text-base" style={{ color: 'var(--text-secondary)' }}>{post.text}</p>
+                <div className="flex flex-wrap gap-1.5 mb-3">
                   {post.tags.map((tag, idx) => (
-                    <span key={idx} className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">{tag}</span>
+                    <span key={idx} className="dark-tag">{tag}</span>
                   ))}
                 </div>
                 {post.fileUrl && (
@@ -212,52 +197,53 @@ const UserProfile = () => {
                     href={post.fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors duration-300 text-sm sm:text-base"
+                    className="link-accent text-sm font-medium"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    View Material
+                    View Material ↗
                   </a>
                 )}
-                <small className="block text-gray-500 mt-4 text-right text-xs sm:text-sm">
+                <small className="block mt-3 text-right text-xs" style={{ color: 'var(--text-muted)' }}>
                   Posted on {new Date(post.date).toLocaleDateString()}
                 </small>
               </div>
             ))
           ) : (
-            <p>This user hasn't posted any materials yet</p>
+            <p style={{ color: 'var(--text-muted)' }}>This user hasn't posted any materials yet</p>
           )}
         </div>
       </div>
-      {/* Edit modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-4 sm:p-6 rounded-xl shadow-lg w-full max-w-md relative max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">Edit Profile</h2>
+        <div className="modal-overlay">
+          <div className="modal-card">
+            <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Edit Profile</h2>
             <form onSubmit={handleEdit} className="space-y-4">
               <label className="block">
-                <span className="block mb-1">Name</span>
+                <span className="block mb-1 text-sm" style={{ color: 'var(--text-secondary)' }}>Name</span>
                 <input
-                  className="border p-2 rounded w-full"
+                  className="dark-input"
                   value={editName}
                   onChange={e => setEditName(e.target.value)}
                   required
                 />
               </label>
               <label className="block">
-                <span className="block mb-1">Bio</span>
+                <span className="block mb-1 text-sm" style={{ color: 'var(--text-secondary)' }}>Bio</span>
                 <textarea
-                  className="border p-2 rounded w-full"
+                  className="dark-input"
                   value={editBio}
                   onChange={e => setEditBio(e.target.value)}
                   rows={3}
+                  style={{ resize: 'vertical' }}
                 />
               </label>
               <label className="block">
-                <span className="block mb-1">Profile Picture</span>
+                <span className="block mb-1 text-sm" style={{ color: 'var(--text-secondary)' }}>Profile Picture</span>
                 <input
                   type="file"
                   accept="image/*"
-                  className="w-full"
+                  className="w-full text-sm"
+                  style={{ color: 'var(--text-muted)' }}
                   onChange={e => {
                     const file = e.target.files?.[0];
                     setEditPhoto(file);
@@ -270,13 +256,14 @@ const UserProfile = () => {
                   src={previewPhoto}
                   alt="Preview"
                   className="w-20 h-20 rounded-full object-cover mx-auto"
+                  style={{ border: '2px solid var(--border-color)' }}
                 />
               )}
-              {error && <p className="text-red-500 text-sm">{error}</p>}
+              {error && <p className="text-sm" style={{ color: 'var(--error)' }}>{error}</p>}
               <div className="flex flex-col sm:flex-row gap-2">
                 <button
                   type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex-1"
+                  className="btn-primary flex-1"
                   disabled={loading}
                   style={loading ? { opacity: 0.5, cursor: "not-allowed" } : {}}
                 >
@@ -290,7 +277,7 @@ const UserProfile = () => {
                     setPreviewPhoto("");
                     setError("");
                   }}
-                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex-1 sm:flex-initial"
+                  className="btn-ghost flex-1 sm:flex-initial"
                 >
                   Cancel
                 </button>

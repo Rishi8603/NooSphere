@@ -53,7 +53,6 @@ const FollowersFollowingPage = () => {
 
   const handleProfileClick = (e, targetUserId) => {
     e.preventDefault();
-    // navigate instead of Link to ensure proper routing
     navigate(`/user/${targetUserId}`, {
       replace: false,
       state: { from: 'followers-page' }
@@ -62,25 +61,9 @@ const FollowersFollowingPage = () => {
 
   if (error) {
     return (
-      <div style={{
-        maxWidth: "600px",
-        margin: "80px auto 20px",
-        padding: "20px",
-        textAlign: "center"
-      }}>
-        <p style={{ color: "#dc3545", fontSize: "18px" }}>{error}</p>
-        <button
-          onClick={() => navigate('/login')}
-          style={{
-            marginTop: "16px",
-            padding: "10px 24px",
-            backgroundColor: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer"
-          }}
-        >
+      <div style={{ maxWidth: "600px", margin: "80px auto 20px", padding: "20px", textAlign: "center" }}>
+        <p style={{ color: "var(--error)", fontSize: "18px" }}>{error}</p>
+        <button onClick={() => navigate('/login')} className="btn-primary" style={{ marginTop: '16px' }}>
           Go to Login
         </button>
       </div>
@@ -89,152 +72,89 @@ const FollowersFollowingPage = () => {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <button
-        onClick={() => navigate(-1)}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          padding: "8px 16px",
-          marginBottom: "16px",
-          border: "1px solid #e0e0e0",
-          borderRadius: "8px",
-          backgroundColor: "white",
-          cursor: "pointer",
-          fontSize: "14px",
-          color: "#333",
-          transition: "all 0.2s",
-          fontWeight: "500"
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = "#f5f5f5";
-          e.currentTarget.style.borderColor = "black";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = "white";
-          e.currentTarget.style.borderColor = "#e0e0e0";
-        }}
-      >
-        <span style={{ marginRight: "6px", fontSize: "18px" }}>←</span>
+      <button onClick={() => navigate(-1)} className="back-btn">
+        <span style={{ fontSize: '18px' }}>←</span>
         Back to Profile
       </button>
 
-      {/* Profile Owner Header Section */}
       {profileOwner && (
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          padding: "10px",
-          backgroundColor: "#f8f9fa",
-          borderRadius: "12px",
-          marginBottom: "24px",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          cursor: "pointer"
-        }}
+        <div
+          className="dark-card flex items-center mb-6 cursor-pointer transition-all duration-200"
           onClick={(e) => handleProfileClick(e, userId)}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#3a3a3a'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-color)'; }}
         >
           <img
-            src={profileOwner.photo || profileOwner.profilePic || `https://ui-avatars.com/api/?name=${profileOwner.name}`}
+            src={profileOwner.photo || profileOwner.profilePic || `https://ui-avatars.com/api/?name=${profileOwner.name}&background=222&color=888`}
             alt={profileOwner.name}
-            style={{
-              width: "80px",
-              height: "80px",
-              borderRadius: "50%",
-              objectFit: "cover",
-              marginRight: "16px",
-              border: "3px solid"
-            }}
+            className="rounded-full object-cover mr-4"
+            style={{ width: '72px', height: '72px', border: '3px solid var(--border-color)' }}
           />
           <div>
-            <h2 style={{
-              margin: "0 0 4px 0",
-              fontSize: "24px",
-              color: "#333"
-            }}>
+            <h2 className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>
               {profileOwner.name}
             </h2>
           </div>
         </div>
       )}
 
-      {/* Tab Buttons */}
-      <div style={{
-        display: "flex",
-        borderBottom: "2px solid #e0e0e0",
-        marginBottom: "20px"
-      }}>
+      <div className="flex mb-5" style={{ borderBottom: '1px solid var(--border-color)' }}>
         <button
           onClick={() => setTab("followers")}
+          className="flex-1 py-3 text-sm font-medium transition-colors duration-150"
           style={{
-            flex: 1,
-            padding: "12px",
-            border: "none",
-            background: "none",
-            cursor: "pointer",
-            fontSize: "16px",
-            fontWeight: tab === "followers" ? "bold" : "normal",
-            color: tab === "followers" ? "#007bff" : "#666",
-            borderBottom: tab === "followers" ? "3px solid #007bff" : "none"
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: tab === "followers" ? 'var(--accent)' : 'var(--text-muted)',
+            borderBottom: tab === "followers" ? '2px solid var(--accent)' : '2px solid transparent',
+            fontFamily: 'inherit',
           }}
         >
           Followers ({followers.length})
         </button>
         <button
           onClick={() => setTab("following")}
+          className="flex-1 py-3 text-sm font-medium transition-colors duration-150"
           style={{
-            flex: 1,
-            padding: "12px",
-            border: "none",
-            background: "none",
-            cursor: "pointer",
-            fontSize: "16px",
-            fontWeight: tab === "following" ? "bold" : "normal",
-            color: tab === "following" ? "#007bff" : "#666",
-            borderBottom: tab === "following" ? "3px solid #007bff" : "none"
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: tab === "following" ? 'var(--accent)' : 'var(--text-muted)',
+            borderBottom: tab === "following" ? '2px solid var(--accent)' : '2px solid transparent',
+            fontFamily: 'inherit',
           }}
         >
           Following ({following.length})
         </button>
       </div>
 
-      {/* Loading State */}
-      {loading && <p style={{ textAlign: "center", color: "#666" }}>Loading...</p>}
+      {loading && <p style={{ textAlign: "center", color: "var(--text-muted)" }}>Loading...</p>}
 
-      {/* User Lists */}
       {!loading && (
         <div>
           {tab === "followers" && (
             <div>
               {followers.length === 0 ? (
-                <p style={{ textAlign: "center", color: "#999" }}>No followers yet</p>
+                <p style={{ textAlign: "center", color: "var(--text-muted)" }}>No followers yet</p>
               ) : (
                 followers.map(user => (
                   <div
                     key={user._id}
                     onClick={(e) => handleProfileClick(e, user._id)}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      padding: "12px",
-                      borderBottom: "1px solid #eee",
-                      cursor: "pointer",
-                      transition: "background 0.2s"
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = "#f5f5f5"}
-                    onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                    className="flex items-center py-3 px-2 cursor-pointer rounded-lg transition-colors duration-150"
+                    style={{ borderBottom: '1px solid var(--border-color)' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                   >
                     <img
-                      src={user.photo || user.profilePic || `https://ui-avatars.com/api/?name=${user.name}`}
+                      src={user.photo || user.profilePic || `https://ui-avatars.com/api/?name=${user.name}&background=222&color=888`}
                       alt={user.name}
-                      style={{
-                        width: "50px",
-                        height: "50px",
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        marginRight: "12px"
-                      }}
+                      className="rounded-full object-cover mr-3"
+                      style={{ width: '44px', height: '44px', border: '2px solid var(--border-color)' }}
                     />
                     <div>
-                      <div style={{ fontWeight: "500", fontSize: "16px" }}>{user.name}</div>
+                      <div className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{user.name}</div>
                     </div>
                   </div>
                 ))
@@ -245,36 +165,25 @@ const FollowersFollowingPage = () => {
           {tab === "following" && (
             <div>
               {following.length === 0 ? (
-                <p style={{ textAlign: "center", color: "#999" }}>Not following anyone yet</p>
+                <p style={{ textAlign: "center", color: "var(--text-muted)" }}>Not following anyone yet</p>
               ) : (
                 following.map(user => (
                   <div
                     key={user._id}
                     onClick={(e) => handleProfileClick(e, user._id)}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      padding: "12px",
-                      borderBottom: "1px solid #eee",
-                      cursor: "pointer",
-                      transition: "background 0.2s"
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = "#f5f5f5"}
-                    onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                    className="flex items-center py-3 px-2 cursor-pointer rounded-lg transition-colors duration-150"
+                    style={{ borderBottom: '1px solid var(--border-color)' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                   >
                     <img
-                      src={user.photo || user.profilePic || `https://ui-avatars.com/api/?name=${user.name}`}
+                      src={user.photo || user.profilePic || `https://ui-avatars.com/api/?name=${user.name}&background=222&color=888`}
                       alt={user.name}
-                      style={{
-                        width: "50px",
-                        height: "50px",
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        marginRight: "12px"
-                      }}
+                      className="rounded-full object-cover mr-3"
+                      style={{ width: '44px', height: '44px', border: '2px solid var(--border-color)' }}
                     />
                     <div>
-                      <div style={{ fontWeight: "500", fontSize: "16px" }}>{user.name}</div>
+                      <div className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{user.name}</div>
                     </div>
                   </div>
                 ))

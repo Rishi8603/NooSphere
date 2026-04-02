@@ -29,36 +29,37 @@ const EditPost = ({ post, onSave, onCancel }) => {
     }
   };
   return (
-    <form onSubmit={handleSubmit}>
-      <h3 className="text-xl font-bold mb-2">Editing Post</h3>
+    <form onSubmit={handleSubmit} className="dark-card">
+      <h3 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Editing Post</h3>
 
-      <div className="mb-2">
+      <div className="mb-3">
         <input
           name="headline"
           value={formData.headline}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="dark-input"
           placeholder="Headline"
         />
       </div>
 
-      <div className="mb-2">
+      <div className="mb-3">
         <textarea
           name="text"
           value={formData.text}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="dark-input"
           rows="3"
           placeholder="Write your post..."
+          style={{ resize: 'vertical' }}
         />
       </div>
 
-      <div className="mb-2">
+      <div className="mb-3">
         <input
           name="fileUrl"
           value={formData.fileUrl}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="dark-input"
           placeholder="File URL"
         />
       </div>
@@ -68,23 +69,16 @@ const EditPost = ({ post, onSave, onCancel }) => {
           name="tags"
           value={formData.tags}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="dark-input"
           placeholder="Comma-separated tags"
         />
       </div>
 
       <div className="flex space-x-2">
-        <button
-          type="submit"
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-        >
+        <button type="submit" className="btn-primary">
           Save
         </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-        >
+        <button type="button" onClick={onCancel} className="btn-ghost">
           Cancel
         </button>
       </div>

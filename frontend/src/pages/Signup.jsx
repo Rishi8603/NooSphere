@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import {useNavigate} from 'react-router-dom'
-import { signup } from "../services/authService";
+import React, { useState, useEffect, useRef, useContext } from "react";
+import { useNavigate } from 'react-router-dom'
+import { signup, googleLogin } from "../services/authService";
+import { AuthContext } from "../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
 import visibleIcon from "../assets/visible.png";
 import invisibleIcon from "../assets/invisible.png";
-
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -11,10 +12,12 @@ const Signup = () => {
     email: "",
     password: "",
   });
-  const [error, setError]=useState("")
+  const [error, setError] = useState("")
   const [isSuccess, setIsSuccess] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); 
-  const navigate=useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+  const { setUser } = useContext(AuthContext);
+  const googleBtnRef = useRef(null);
 
   const handleChange = (e) => {
     setFormData({
@@ -24,13 +27,13 @@ const Signup = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();//it stops reloading of page
-    try{
-      const data=await signup(formData);//call backend
-      console.log("SignUp success:" ,data)
+    e.preventDefault();
+    try {
+      const data = await signup(formData);
+      console.log("SignUp success:", data)
       setIsSuccess(true);
       setTimeout(() => navigate('/'), 1000);
-    }catch(err){
+    } catch (err) {
       console.error("Signup error:", err);
       const message =
         err.response?.data?.message || err.message || "Signup failed";
@@ -38,59 +41,102 @@ const Signup = () => {
     }
   };
 
+  const handleGoogleResponse = async (response) => {
+    try {
+      const data = await googleLogin(response.credential);
+      localStorage.setItem("token", data.authToken);
+      const decodedUser = jwtDecode(data.authToken);
+      setUser(decodedUser.user);
+      navigate("/");
+    } catch (err) {
+      console.error("Google signup error:", err);
+      setError(err.message || "Google signup failed");
+    }
+  };
+
+  useEffect(() => {
+    if (window.google && googleBtnRef.current) {
+      window.google.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        callback: handleGoogleResponse,
+      });
+      window.google.accounts.id.renderButton(googleBtnRef.current, {
+        theme: "outline",
+        size: "large",
+        width: "100%",
+        text: "signup_with",
+      });
+    }
+  }, []);
+
   return (
-    <div className="flex justify-center items-center h-screen">
-      <form onSubmit={handleSubmit} className="p-4 border rounded w-80">
-        <h2 className="text-2xl mb-4">Signup</h2>
+    <div className="auth-card-inner">
+      <h2>Create account</h2>
+      <p className="auth-subtitle">Get started with NooSphere</p>
 
-        {error && <p className="text-red-500">{error}</p>}
-        {isSuccess && <p className="text-green-500 mb-2">Successfully Created!</p>}
+      {error && <div className="auth-error">{error}</div>}
+      {isSuccess && <div className="auth-success">Account created successfully!</div>}
 
-        <input
-          name="name"
-          placeholder="Username"
-          value={formData.name}
-          onChange={handleChange}
-          className="mb-2 p-2 border w-full"
-        />
-
-        <input
-          name="email"
-          type="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          className="mb-2 p-2 border w-full"
-        />
-
-        <div className="relative mb-2">
+      <form onSubmit={handleSubmit}>
+        <div className="auth-input-group">
+          <label htmlFor="signup-name">Username</label>
           <input
+            id="signup-name"
+            name="name"
+            placeholder="Choose a username"
+            value={formData.name}
+            onChange={handleChange}
+            className="auth-input"
+          />
+        </div>
+
+        <div className="auth-input-group">
+          <label htmlFor="signup-email">Email</label>
+          <input
+            id="signup-email"
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            value={formData.email}
+            onChange={handleChange}
+            className="auth-input"
+          />
+        </div>
+
+        <div className="auth-input-group">
+          <label htmlFor="signup-password">Password</label>
+          <input
+            id="signup-password"
             name="password"
             type={showPassword ? "text" : "password"}
-            placeholder="Password"
+            placeholder="••••••••"
             value={formData.password}
             onChange={handleChange}
-            className="mb-2 p-2 border w-full"
+            className="auth-input"
           />
-          <button type="button" onClick={() =>setShowPassword((prev)=>!prev)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="auth-password-toggle"
+          >
             {showPassword ? (
-              <img
-                src={visibleIcon}
-                alt="Show Password"
-                className="w-6 h-6 mb-2" 
-              />
+              <img src={visibleIcon} alt="Show Password" />
             ) : (
-              <img
-                src={invisibleIcon}
-                alt="Hide Password"
-                className="w-6 h-6 mb-2"
-              />
+              <img src={invisibleIcon} alt="Hide Password" />
             )}
           </button>
         </div>
-        <button type="submit" className="bg-blue-500 text-white p-2 w-full">Signup</button>
+
+        <button type="submit" className="auth-submit-btn">Create account</button>
       </form>
+
+      <div className="auth-divider">
+        <hr />
+        <span>OR</span>
+        <hr />
+      </div>
+
+      <div ref={googleBtnRef} className="auth-google-btn"></div>
     </div>
   );
 };
