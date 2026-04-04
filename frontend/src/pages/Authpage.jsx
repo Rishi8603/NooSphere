@@ -1,12 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import Login from "./Login";
 import Signup from "./Signup";
+import { guestLogin } from "../services/authService";
+import { AuthContext } from "../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 const Authpage = () => {
   const [isLoginView, setIsLoginView] = useState(true);
+  const [guestLoading, setGuestLoading] = useState(false);
+  const [guestError, setGuestError] = useState("");
+  const navigate = useNavigate();
+  const { setUser } = useContext(AuthContext);
 
   const toggleView = () => {
     setIsLoginView(!isLoginView);
+  };
+
+  const handleGuestLogin = async () => {
+    setGuestLoading(true);
+    setGuestError("");
+    try {
+      const data = await guestLogin();
+      localStorage.setItem("token", data.authToken);
+      const decodedUser = jwtDecode(data.authToken);
+      setUser(decodedUser.user);
+      navigate("/");
+    } catch (err) {
+      console.error("Guest login error:", err);
+      setGuestError(err.message || "Guest login failed");
+      setGuestLoading(false);
+    }
   };
 
   return (
@@ -41,6 +65,23 @@ const Authpage = () => {
                 <button onClick={toggleView}>Log in</button>
               </p>
             )}
+          </div>
+
+          <div className="auth-guest-section">
+            <div className="auth-divider">
+              <hr />
+              <span>OR</span>
+              <hr />
+            </div>
+            {guestError && <div className="auth-error">{guestError}</div>}
+            <button
+              id="guest-mode-btn"
+              className="auth-guest-btn"
+              onClick={handleGuestLogin}
+              disabled={guestLoading}
+            >
+              {guestLoading ? "Entering…" : "Continue as Guest"}
+            </button>
           </div>
         </div>
       </div>

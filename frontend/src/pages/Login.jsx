@@ -63,7 +63,7 @@ const Login = () => {
 
   return (
     <div className="auth-card-inner">
-      <h2>Welcome back</h2>
+      <h2>Welcome</h2>
       <p className="auth-subtitle">Sign in to your account</p>
 
       {error && <div className="auth-error">{error}</div>}

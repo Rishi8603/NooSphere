@@ -62,3 +62,25 @@ export const googleLogin = async (idToken) => {
     }
   }
 };
+
+export const guestLogin = async () => {
+  try {
+    const response = await api.post('/auth/guest');
+    if (response.data.authToken) {
+      localStorage.setItem('token', response.data.authToken);
+    }
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const msg =
+        error.response.data?.message ||
+        error.response.data?.error ||
+        "Guest login failed";
+      throw new Error(msg);
+    } else if (error.request) {
+      throw new Error("Cannot connect to the server. Please check your connection.");
+    } else {
+      throw new Error(error.message);
+    }
+  }
+};

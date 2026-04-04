@@ -131,4 +131,39 @@ const googleLogin = async (req, res) => {
   }
 };
 
-module.exports = { signup, login, googleLogin };
+const guestLogin = async (req, res) => {
+  try {
+    const guestEmail = "guest@noosphere.demo";
+
+    let user = await User.findOne({ email: guestEmail });
+
+    if (!user) {
+      // Create the guest account once with a random unusable password
+      const salt = await bcrypt.genSalt(10);
+      const randomPass = await bcrypt.hash(Date.now().toString() + Math.random(), salt);
+
+      user = await User.create({
+        name: "Guest User",
+        email: guestEmail,
+        password: randomPass,
+        bio: "👋 I'm exploring NooSphere as a guest!",
+      });
+    }
+
+    const payload = {
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      }
+    };
+
+    const authToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
+    res.json({ success: true, authToken });
+  } catch (error) {
+    console.error("Guest login error:", error.message);
+    res.status(500).json({ error: "Guest login failed" });
+  }
+};
+
+module.exports = { signup, login, googleLogin, guestLogin };

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -25,13 +25,17 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: var(--bg-primary);
   color: var(--text-primary);
 }
-
 
 ::-webkit-scrollbar {
   width: 6px;
@@ -50,7 +54,6 @@ body {
   background: #444;
 }
 
-
 .auth-page {
   display: flex;
   min-height: 100vh;
@@ -61,25 +64,31 @@ body {
 .auth-left {
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 28px;
   background: transparent;
   position: relative;
   overflow: hidden;
+  padding: 40px;
 }
 
 .auth-left::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background-image:
-    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(255, 255, 255, 0.03) 1px,
+    transparent 0
+  );
   background-size: 40px 40px;
   pointer-events: none;
 }
 
 .auth-left::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 500px;
   height: 500px;
@@ -87,7 +96,6 @@ body {
   background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
   pointer-events: none;
 }
-
 
 .globe-placeholder {
   width: 320px;
@@ -101,7 +109,7 @@ body {
 
 .globe-placeholder::before,
 .globe-placeholder::after {
-  content: '';
+  content: "";
   position: absolute;
   border-radius: 50%;
   border: 1.5px solid rgba(56, 189, 248, 0.12);
@@ -175,8 +183,6 @@ body {
 }
 
 .auth-brand {
-  position: absolute;
-  bottom: 60px;
   text-align: center;
   z-index: 1;
 }
@@ -201,7 +207,6 @@ body {
   justify-content: center;
   padding: 40px;
 }
-
 
 .auth-card {
   width: 100%;
@@ -230,7 +235,6 @@ body {
   margin-bottom: 28px;
 }
 
-
 .auth-input-group {
   margin-bottom: 18px;
   position: relative;
@@ -255,7 +259,9 @@ body {
   border-radius: var(--radius-sm);
   color: var(--text-primary);
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
   font-family: inherit;
 }
 
@@ -304,7 +310,10 @@ body {
   border: none;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.1s ease,
+    box-shadow 0.2s ease;
   letter-spacing: 0.01em;
   margin-top: 4px;
 }
@@ -410,8 +419,6 @@ body {
   }
 }
 
-
-
 .dark-input {
   width: 100%;
   padding: 10px 14px;
@@ -421,7 +428,9 @@ body {
   border-radius: var(--radius-sm);
   color: var(--text-primary);
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
   font-family: inherit;
 }
 
@@ -434,14 +443,12 @@ body {
   box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
-
 .dark-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
   padding: 20px;
 }
-
 
 .btn-primary {
   padding: 10px 20px;
@@ -453,7 +460,9 @@ body {
   border: none;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .btn-primary:hover {
@@ -465,7 +474,6 @@ body {
   opacity: 0.4;
   cursor: not-allowed;
 }
-
 
 .btn-danger {
   padding: 10px 20px;
@@ -484,7 +492,6 @@ body {
   background: rgba(248, 113, 113, 0.25);
 }
 
-
 .btn-ghost {
   padding: 10px 20px;
   font-size: 0.875rem;
@@ -495,7 +502,10 @@ body {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .btn-ghost:hover {
@@ -503,7 +513,6 @@ body {
   color: var(--text-primary);
   border-color: #444;
 }
-
 
 .dark-tag {
   display: inline-block;
@@ -516,7 +525,6 @@ body {
   font-weight: 500;
 }
 
-
 .link-accent {
   color: var(--accent);
   text-decoration: none;
@@ -527,7 +535,6 @@ body {
   color: var(--accent-hover);
   text-decoration: underline;
 }
-
 
 .modal-overlay {
   position: fixed;
@@ -553,7 +560,6 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
-
 .back-btn {
   display: inline-flex;
   align-items: center;
@@ -568,7 +574,10 @@ body {
   font-weight: 500;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .back-btn:hover {
@@ -576,7 +585,6 @@ body {
   border-color: #444;
   color: var(--text-primary);
 }
-
 
 .ai-summary-panel {
   margin-top: 12px;
@@ -616,4 +624,43 @@ textarea:-webkit-autofill:active {
   caret-color: #f0f0f0 !important;
   transition: background-color 5000s ease-in-out 0s !important;
   border: 1px solid #2a2a2a !important;
+}
+
+.auth-guest-section {
+  margin-top: 8px;
+}
+
+.auth-guest-btn {
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  letter-spacing: 0.01em;
+}
+
+.auth-guest-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  border-color: #444;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.04);
+}
+
+.auth-guest-btn:active {
+  transform: scale(0.985);
+}
+
+.auth-guest-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
