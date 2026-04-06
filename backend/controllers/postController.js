@@ -42,7 +42,7 @@ const getPosts = async (req, res) => {
     
     const userId = req.user?.id?.toString();
 
-    const result = posts.map(post => {
+    let result = posts.map(post => {
       const liked = userId
         ? post.likes.some(id => id.toString() === userId)
         : false; 
