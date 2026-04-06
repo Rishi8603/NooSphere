@@ -20,10 +20,11 @@ const getUserProfile = async (req, res) => {
 const updateUserProfile = async (req, res) => {
   try {
     const userId = req.user.id; // from authMiddleware
-    const { name, bio } = req.body;
+    const { name, bio, academicInterests } = req.body;
     const updatedFields = {};
     if (name) updatedFields.name = name;
     if (bio !== undefined) updatedFields.bio = bio;
+    if (academicInterests !== undefined) updatedFields.academicInterests = academicInterests;
 
     if (req.file) {
       const uploadFromBuffer = (buffer) => {

@@ -21,11 +21,18 @@ const PostDetail = () => {
 
   useEffect(() => {
     setLoading(true);
-    getPostById(postId).then((data) => setPost(data));
+    getPostById(postId).then((data) => {
+      setPost(data);
+      if (data.aiSummary) {
+        setSummary(data.aiSummary);
+        setShowSummary(true);
+      } else {
+        setSummary("");
+        setShowSummary(false);
+      }
+    });
     getComments(postId).then((data) => setComments(data.comments));
     setLoading(false);
-    setSummary("");
-    setShowSummary(false);
     setSummaryError("");
   }, [postId]);
 
@@ -139,11 +146,22 @@ const PostDetail = () => {
 
           {showSummary && summary && (
             <div className="ai-summary-panel">
-              <div className="label">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z" />
-                </svg>
-                <span>AI Summary</span>
+              <div className="label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z" />
+                  </svg>
+                  <span>AI Summary</span>
+                </div>
+                <button 
+                  onClick={() => setShowSummary(false)} 
+                  title="Minimize Summary"
+                  style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px' }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 hover:text-white transition-colors" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
               </div>
               <div className="content">
                 {summary}

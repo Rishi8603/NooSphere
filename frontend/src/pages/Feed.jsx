@@ -1,12 +1,28 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import EditPost from '../Components/EditPost';
 import { Link, useNavigate } from 'react-router-dom';
+import { getUserProfile } from '../services/userService';
 
 const Feed = ({ posts, loading, onDelete, onUpdate, onToggleLike }) => {
   const { user } = useContext(AuthContext);
   const [editingPostId, setEditingPostId] = useState(null);
+  const [showBanner, setShowBanner] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user?.id) {
+      if (localStorage.getItem('hideInterestBanner') === 'true') {
+        setShowBanner(false);
+        return;
+      }
+      getUserProfile(user.id).then(data => {
+        if (!data.academicInterests || data.academicInterests.trim() === '') {
+          setShowBanner(true);
+        }
+      }).catch(err => console.error(err));
+    }
+  }, [user?.id]);
 
   if (loading) return <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '40px 0' }}>Loading posts...</p>;
   if (posts.length === 0) return <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '40px 0' }}>No posts yet. Be the first to create one!</p>;
@@ -18,6 +34,28 @@ const Feed = ({ posts, loading, onDelete, onUpdate, onToggleLike }) => {
 
   return (
     <div className="space-y-3">
+      {showBanner && (
+        <div className="dark-card" style={{ background: 'rgba(99, 102, 241, 0.1)', borderColor: '#6366f1', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h3 className="font-semibold text-sm" style={{ color: '#8b5cf6' }}>Personalize Your Feed!</h3>
+            <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
+              Please update your academic interests in <Link to="/settings" className="hover:underline font-medium" style={{ color: '#6366f1' }}>Settings</Link> to help our AI rank the most relevant study materials for you.
+            </p>
+          </div>
+          <button 
+            onClick={() => {
+              localStorage.setItem('hideInterestBanner', 'true');
+              setShowBanner(false);
+            }}
+            className="text-gray-400 hover:text-white transition-colors"
+            title="Don't show this again"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </button>
+        </div>
+      )}
       {posts
         .filter(post => post && post._id && post.user)
         .map(post =>

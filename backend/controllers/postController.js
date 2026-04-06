@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const Post=require('../models/Post')
+const Post = require('../models/Post');
+const { generateSummaryForPost, rankPostsWithGroq } = require('./aiController');
 
 const createPost=async(req,res)=>{
   try{
@@ -15,6 +16,14 @@ const createPost=async(req,res)=>{
       headline,text,fileUrl,tags,
       user:userId,//link the post to logged in user
     })
+
+    try {
+      const summary = await generateSummaryForPost({ headline, text, tags, fileUrl });
+      newPost.aiSummary = summary;
+    } catch (err) {
+      console.error("Auto-summary failed:", err.message);
+      newPost.aiSummary = "";
+    }
 
     //save new post to db
     const savedPost=await newPost.save();
@@ -50,6 +59,38 @@ const getPosts = async (req, res) => {
         commentsCount:post.commentsCount
       };
     });
+
+    let currentUser = null;
+    if (userId) {
+      const User = mongoose.model('User');
+      currentUser = await User.findById(userId).lean();
+    }
+
+    if (currentUser && currentUser.academicInterests && currentUser.academicInterests.trim() !== '') {
+      const topLimit = 40;
+      const topPosts = result.slice(0, topLimit);
+      const restPosts = result.slice(topLimit);
+
+      const postsForAI = topPosts.map(p => ({
+        id: p._id.toString(),
+        headline: p.headline,
+        tags: p.tags
+      }));
+
+      const rankedIds = await rankPostsWithGroq(postsForAI, currentUser.academicInterests);
+
+      if (rankedIds && rankedIds.length > 0) {
+        topPosts.sort((a, b) => {
+          const indexA = rankedIds.indexOf(a._id.toString());
+          const indexB = rankedIds.indexOf(b._id.toString());
+          const rankA = indexA === -1 ? 9999 : indexA;
+          const rankB = indexB === -1 ? 9999 : indexB;
+          return rankA - rankB;
+        });
+
+        result = [...topPosts, ...restPosts];
+      }
+    }
 
     res.json(result);
   } catch (error) {
